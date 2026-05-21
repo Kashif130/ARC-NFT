@@ -1029,7 +1029,7 @@ async function onWalletConnected() {
     await loadStats();
     toast('Wallet connected. Loading marketplace…', 'success');
   } else {
-    toast('Wallet connected! Go to Setup tab to deploy contract.', 'success');
+    toast('Wallet connected! Go to Admin tab to manage your marketplace.', 'success');
   }
 }
 
@@ -1120,7 +1120,7 @@ async function loadStats() {
 async function loadMarketplace() {
   const grid = document.getElementById('marketplaceGrid');
   if (!marketContract) {
-    grid.innerHTML = `<div class="empty"><span class="empty-icon">🏗️</span><div class="empty-title">Deploy contract first</div><p>Go to the Setup tab to deploy ArcNFTMarket.sol</p></div>`;
+    grid.innerHTML = `<div class="empty"><span class="empty-icon">🏗️</span><div class="empty-title">Deploy contract first</div><p>Contract not found. Check Admin tab.</p></div>`;
     return;
   }
 
@@ -1239,7 +1239,7 @@ async function fetchMetadata(tokenId, uri) {
 // ── MINT ─────────────────────────────────────
 async function mintNFT() {
   if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
-  if (!marketContract) { toast('Set contract address in Setup tab', 'error'); return; }
+  if (!marketContract) { toast('Contract not connected. Check Admin tab.', 'error'); return; }
 
   const name  = document.getElementById('nftName').value.trim();
   const desc  = document.getElementById('nftDesc').value.trim();
@@ -1476,12 +1476,14 @@ function updateRoyaltyPreview() {
 function switchTab(tab) {
   document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('tab-' + tab).classList.add('active');
-  const idx = ['marketplace','mint','mynfts','setup'].indexOf(tab);
+  const panel = document.getElementById('tab-' + tab);
+  if (panel) panel.classList.add('active');
+  const idx = ['marketplace','mint','mynfts','admin'].indexOf(tab);
   document.querySelectorAll('.tab-btn')[idx]?.classList.add('active');
 
   if (tab === 'marketplace' && marketContract) loadMarketplace();
   if (tab === 'mynfts' && marketContract) loadMyNFTs();
+  if (tab === 'admin' && isAdmin && marketContract) loadAdminData();
 }
 
 // ── TOAST ────────────────────────────────────
@@ -1529,6 +1531,7 @@ function adminLogin() {
     document.getElementById('adminDashboard').style.display = 'block';
     loadAdminData();
     toast('Welcome, Admin!', 'success');
+    document.getElementById('adminTabBtn').style.display = 'block';
   } else {
     toast('Wrong password', 'error');
     document.getElementById('adminPassInput').value = '';
@@ -1540,6 +1543,8 @@ function adminLogout() {
   document.getElementById('adminLoginCard').style.display = 'block';
   document.getElementById('adminDashboard').style.display = 'none';
   document.getElementById('adminPassInput').value = '';
+  document.getElementById('adminTabBtn').style.display = 'none';
+  switchTab('marketplace');
 }
 
 // ── LOAD ADMIN DATA ──
@@ -1784,8 +1789,20 @@ async function confirmList() {
 }
 
 // ── Show admin tab only when wallet = deployer? Optional: show always ──
-// Admin tab is always visible (protected by password)
-document.getElementById('adminTabBtn').style.display = 'block';
+// Admin tab stays hidden — only shown after secret key combo
+
+// Secret key combo to reveal admin tab: type "admin" anywhere
+let _adminSeq = '';
+document.addEventListener('keydown', (e) => {
+  _adminSeq += e.key.toLowerCase();
+  if (_adminSeq.length > 5) _adminSeq = _adminSeq.slice(-5);
+  if (_adminSeq === 'admin') {
+    const btn = document.getElementById('adminTabBtn');
+    btn.style.display = 'block';
+    switchTab('admin');
+    _adminSeq = '';
+  }
+});
 
 // Load banner on page start
 window.addEventListener('load', () => {
