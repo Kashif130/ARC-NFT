@@ -1270,6 +1270,45 @@ code{
             </div>
           </div>
 
+          <!-- ── SET NEW CONTRACT ── -->
+          <div class="card" style="border:2px dashed var(--arc);background:var(--arc-light);">
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--arc);margin-bottom:16px">🔗 Set New Contract Address</div>
+            <div class="info-bar" style="margin-bottom:16px;">
+              <span>⚠️</span>
+              <span>Deploy your <code>ArcNFTMarketplace.sol</code> on Remix IDE first, then paste the new contract address below. The marketplace will instantly switch to the new contract.</span>
+            </div>
+            <div class="form-group" style="margin-bottom:12px;">
+              <label>Current Contract</label>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <code id="adminCurrentContract" style="font-size:11px;word-break:break-all;flex:1;padding:8px;display:block;background:var(--white);border:1px solid var(--border2);border-radius:var(--radius);">—</code>
+                <a id="adminExplorerBtn" href="#" target="_blank" class="btn btn-secondary btn-sm" style="display:none;flex-shrink:0;">↗</a>
+              </div>
+            </div>
+            <div class="form-group">
+              <label>New Contract Address</label>
+              <input type="text" id="newContractInput" placeholder="0x…" style="font-family:monospace;font-size:13px;" oninput="validateNewContractInput(this)"/>
+              <p class="hint">Must be a valid Ethereum address (0x + 40 hex chars) deployed on Arc Testnet.</p>
+            </div>
+            <div id="newContractValidation" style="margin-bottom:12px;font-size:13px;display:none;"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-arc" style="flex:1;" id="setNewContractBtn" onclick="applyNewContract()" disabled>
+                ✅ Apply New Contract
+              </button>
+              <button class="btn btn-secondary btn-sm" onclick="clearNewContractInput()">Clear</button>
+            </div>
+            <div style="margin-top:16px;padding-top:14px;border-top:1px solid rgba(26,107,94,.2);">
+              <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--arc);margin-bottom:8px;">📋 Quick Deploy Guide</div>
+              <div style="font-size:12px;color:var(--ink2);line-height:1.8;">
+                1. Open <a href="https://remix.ethereum.org" target="_blank" class="ext-link">Remix IDE ↗</a><br/>
+                2. Upload <code>ArcNFTMarketplace.sol</code> (download from Admin Setup tab)<br/>
+                3. Compile with <strong>Solidity 0.8.20</strong><br/>
+                4. Deploy with MetaMask on <strong>Arc Testnet (5042002)</strong><br/>
+                5. Constructor arg: <code onclick="copyText('0x3600000000000000000000000000000000000000')" style="cursor:pointer;" title="Click to copy">0x3600…0000</code> (USDC)<br/>
+                6. Copy deployed address → paste above → Apply
+              </div>
+            </div>
+          </div>
+
         </div><!-- /admin-grid -->
       </div><!-- /adminDashboard -->
     </div>
@@ -2032,6 +2071,7 @@ async function loadAdminData() {
   await adminRefreshStats();
   await loadAdminListings();
   loadSavedSettings();
+  updateAdminContractDisplay();
 }
 
 async function adminRefreshStats() {
@@ -2912,6 +2952,72 @@ async function confirmList() {
   if (maintenance) { toast('🔧 Site under maintenance — listing paused', 'error'); return; }
   if (!listEnabled) { toast('Public listing is currently disabled', 'error'); return; }
   return _confirmListCore();
+}
+
+// ── NEW CONTRACT CARD HELPERS ──
+
+function updateAdminContractDisplay() {
+  const el  = document.getElementById('adminCurrentContract');
+  const btn = document.getElementById('adminExplorerBtn');
+  if (!el) return;
+  if (CONTRACT_ADDRESS) {
+    el.textContent = CONTRACT_ADDRESS;
+    if (btn) { btn.href = `${ARC_EXPLORER}/address/${CONTRACT_ADDRESS}`; btn.style.display = 'inline-flex'; }
+  } else {
+    el.textContent = 'Not set';
+    if (btn) btn.style.display = 'none';
+  }
+}
+
+function validateNewContractInput(input) {
+  const val   = input.value.trim();
+  const box   = document.getElementById('newContractValidation');
+  const btn   = document.getElementById('setNewContractBtn');
+  if (!val) { box.style.display = 'none'; btn.disabled = true; return; }
+
+  const valid = ethers.isAddress(val);
+  box.style.display = 'block';
+  if (valid) {
+    box.innerHTML = `<span style="color:var(--success)">✅ Valid Ethereum address</span>`;
+    btn.disabled = false;
+  } else {
+    box.innerHTML = `<span style="color:var(--danger)">❌ Invalid address — must be 0x + 40 hex chars</span>`;
+    btn.disabled = true;
+  }
+}
+
+async function applyNewContract() {
+  const val = document.getElementById('newContractInput').value.trim();
+  if (!ethers.isAddress(val)) { toast('Invalid address', 'error'); return; }
+
+  CONTRACT_ADDRESS = val;
+  localStorage.setItem('arcnft_contract', val);
+  updateContractDisplay();
+  updateAdminContractDisplay();
+
+  if (signer) {
+    marketContract = new ethers.Contract(CONTRACT_ADDRESS, MARKET_ABI, signer);
+    toast('Contract updated! Loading data…');
+    try {
+      await loadStats();
+      await loadMarketplace();
+      await adminRefreshStats();
+      await loadAdminListings();
+    } catch(e) {
+      toast('Contract set but data load failed — make sure it\'s deployed on Arc Testnet', 'error');
+    }
+  }
+  toast(`✅ Contract set: ${val.slice(0,6)}…${val.slice(-4)}`, 'success');
+  clearNewContractInput();
+}
+
+function clearNewContractInput() {
+  const inp = document.getElementById('newContractInput');
+  const box = document.getElementById('newContractValidation');
+  const btn = document.getElementById('setNewContractBtn');
+  if (inp) inp.value = '';
+  if (box) box.style.display = 'none';
+  if (btn) btn.disabled = true;
 }
 
 // ── ADMIN REVEAL — keyboard (desktop) + logo 5-tap (mobile) ──
