@@ -1237,7 +1237,7 @@ async function fetchMetadata(tokenId, uri) {
 }
 
 // ── MINT ─────────────────────────────────────
-async function mintNFT() {
+async function _mintNFTCore() {
   if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
   if (!marketContract) { toast('Contract not connected. Check Admin tab.', 'error'); return; }
 
@@ -1409,7 +1409,7 @@ function closeListModal() {
   pendingListTokenId = null;
 }
 
-async function confirmList() {
+async function _confirmListCore() {
   if (!pendingListTokenId) return;
   const tokenId = pendingListTokenId;
   const priceInput = parseFloat(document.getElementById('listPrice').value);
@@ -1770,22 +1770,20 @@ function checkAdminRestrictions() {
   return { mintEnabled, listEnabled, maintenance };
 }
 
-// ── OVERRIDE mintNFT to check restrictions ──
-const _origMintNFT = mintNFT;
+// ── mintNFT with admin restriction check ──
 async function mintNFT() {
   const { mintEnabled, maintenance } = checkAdminRestrictions();
   if (maintenance) { toast('🔧 Site under maintenance — minting paused', 'error'); return; }
   if (!mintEnabled) { toast('Public minting is currently disabled', 'error'); return; }
-  return _origMintNFT();
+  return _mintNFTCore();
 }
 
-// ── OVERRIDE confirmList to check restrictions ──
-const _origConfirmList = confirmList;
+// ── confirmList with admin restriction check ──
 async function confirmList() {
   const { listEnabled, maintenance } = checkAdminRestrictions();
   if (maintenance) { toast('🔧 Site under maintenance — listing paused', 'error'); return; }
   if (!listEnabled) { toast('Public listing is currently disabled', 'error'); return; }
-  return _origConfirmList();
+  return _confirmListCore();
 }
 
 // ── Show admin tab only when wallet = deployer? Optional: show always ──
