@@ -1142,7 +1142,7 @@ code{
             <table style="width:100%;font-size:13px;border-collapse:collapse;">
               <tr style="border-bottom:1px solid var(--border)">
                 <td style="padding:9px 0;color:var(--ink3);width:130px">Contract</td>
-                <td style="padding:9px 0;font-family:monospace;font-size:11px;word-break:break-all">0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406</td>
+                <td style="padding:9px 0;font-family:monospace;font-size:11px;word-break:break-all">0xEE3733049Ec0c9ca105BC7F88CC39b2253Bfa1E6</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border)">
                 <td style="padding:9px 0;color:var(--ink3)">Network</td>
@@ -1158,7 +1158,7 @@ code{
               </tr>
             </table>
             <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
-              <a href="https://testnet.arcscan.app/address/0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406" target="_blank" class="btn btn-secondary btn-sm">View on ArcScan ↗</a>
+              <a href="https://testnet.arcscan.app/address/0xEE3733049Ec0c9ca105BC7F88CC39b2253Bfa1E6" target="_blank" class="btn btn-secondary btn-sm">View on ArcScan ↗</a>
               <button class="btn btn-secondary btn-sm" onclick="adminRefreshStats()">↺ Refresh Stats</button>
             </div>
           </div>
@@ -1483,7 +1483,7 @@ const USDC_ABI = [
 // ── STATE ───────────────────────────────────
 let provider, signer, walletAddress;
 let marketContract, usdcContract;
-let CONTRACT_ADDRESS = '0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406';
+let CONTRACT_ADDRESS = '0xEE3733049Ec0c9ca105BC7F88CC39b2253Bfa1E6';
 let pendingBuyTokenId = null;
 let pendingListTokenId = null;
 let nftMetadataCache = {};
@@ -2113,7 +2113,7 @@ async function loadAdminListings() {
           <div style="font-size:11px;color:var(--ink3);font-family:monospace">${seller.slice(0,6)}…${seller.slice(-4)}</div>
         </div>
         <div style="font-weight:600;color:var(--usdc)">${priceUSDC} USDC</div>
-        <a href="https://testnet.arcscan.app/token/0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406/instance/${id}" target="_blank" style="font-size:11px;color:var(--usdc)">↗</a>
+        <a href="https://testnet.arcscan.app/token/0xEE3733049Ec0c9ca105BC7F88CC39b2253Bfa1E6/instance/${id}" target="_blank" style="font-size:11px;color:var(--usdc)">↗</a>
       </div>`;
     }
     box.innerHTML = rows;
