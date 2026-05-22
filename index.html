@@ -969,6 +969,7 @@ code{
     <div class="section">
       <div class="section-head">
         <h2 class="section-title">👤 My Creator Profile</h2>
+        <span style="background:var(--arc-light);color:var(--arc);padding:4px 12px;border-radius:20px;font-size:12px;font-weight:600;">🔗 Onchain · Arc Testnet</span>
       </div>
 
       <!-- Not connected state -->
@@ -981,9 +982,6 @@ code{
 
       <!-- Profile setup form -->
       <div id="profileSetupArea" style="display:none;max-width:680px;">
-
-        <!-- Onchain status bar -->
-        <div id="profileOnchainStatus" class="info-bar" style="margin-bottom:16px;"></div>
 
         <!-- Live preview -->
         <div class="creator-setup-card">
@@ -1047,7 +1045,7 @@ code{
             <input type="text" id="profileTwitterInput" placeholder="@YourHandle"/>
           </div>
 
-          <button class="btn btn-arc btn-full" onclick="saveCreatorProfile()">💾 Save Profile Onchain</button>
+          <button class="btn btn-arc btn-full" id="saveProfileBtn" onclick="saveCreatorProfile()">💾 Save Profile Onchain</button>
         </div>
       </div>
     </div>
@@ -1145,7 +1143,7 @@ code{
             <table style="width:100%;font-size:13px;border-collapse:collapse;">
               <tr style="border-bottom:1px solid var(--border)">
                 <td style="padding:9px 0;color:var(--ink3);width:130px">Contract</td>
-                <td style="padding:9px 0;font-family:monospace;font-size:11px;word-break:break-all">0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406</td>
+                <td style="padding:9px 0;font-family:monospace;font-size:11px;word-break:break-all">${CONTRACT_ADDRESS}</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border)">
                 <td style="padding:9px 0;color:var(--ink3)">Network</td>
@@ -1155,14 +1153,25 @@ code{
                 <td style="padding:9px 0;color:var(--ink3)">USDC</td>
                 <td style="padding:9px 0;font-family:monospace;font-size:11px">0x3600…0000</td>
               </tr>
-              <tr>
+              <tr style="border-bottom:1px solid var(--border)">
                 <td style="padding:9px 0;color:var(--ink3)">Platform Fee</td>
                 <td style="padding:9px 0">2.5%</td>
               </tr>
+              <tr style="border-bottom:1px solid var(--border)">
+                <td style="padding:9px 0;color:var(--ink3)">Profiles</td>
+                <td style="padding:9px 0"><span style="background:var(--arc-light);color:var(--arc);padding:2px 8px;border-radius:4px;font-size:11px;font-weight:600;">✅ Onchain</span></td>
+              </tr>
+              <tr>
+                <td style="padding:9px 0;color:var(--ink3)">Version</td>
+                <td style="padding:9px 0">ArcNFTMarketV2 · NFT + Profiles</td>
+              </tr>
             </table>
             <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
-              <a href="https://testnet.arcscan.app/address/0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406" target="_blank" class="btn btn-secondary btn-sm">View on ArcScan ↗</a>
+              <a href="${ARC_EXPLORER}/address/${CONTRACT_ADDRESS}" target="_blank" class="btn btn-secondary btn-sm">View on ArcScan ↗</a>
               <button class="btn btn-secondary btn-sm" onclick="adminRefreshStats()">↺ Refresh Stats</button>
+            </div>
+            <div class="info-bar" style="margin-top:14px;margin-bottom:0;font-size:12px;">
+              🔗 This is the <strong>ArcNFTMarketV2</strong> contract — marketplace + profile registry in one. To upgrade, deploy <code>ArcNFTMarketV2.sol</code> and update <code>CONTRACT_ADDRESS</code> in the source.
             </div>
           </div>
 
@@ -1182,58 +1191,6 @@ code{
               <input type="text" id="bannerMsg" placeholder="e.g. 🎉 New collection live now!"/>
             </div>
             <button class="btn btn-arc btn-full" onclick="saveSiteSettings()">Save Site Settings</button>
-          </div>
-
-          <!-- ── PROFILE REGISTRY CONTRACT ── -->
-          <div class="card">
-            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink3);margin-bottom:16px">🔗 Profile Registry Contract (Onchain Profiles)</div>
-            <div class="info-bar" style="margin-bottom:16px;">
-              ℹ️ Deploy the ProfileRegistry contract on Arc Testnet and paste its address below. Profiles (username, bio, Twitter, avatar) will then be stored onchain — visible to all users, not just locally.
-            </div>
-            <div class="form-group">
-              <label>Profile Contract Address</label>
-              <input type="text" id="profileContractInput" placeholder="0x…"
-                     oninput="document.getElementById('profileContractInput').style.borderColor=''"/>
-              <p class="hint">After deploying ProfileRegistry.sol on Arc Testnet, paste address here. Leave blank to use local-only storage.</p>
-            </div>
-            <div id="profileContractStatus" style="font-size:12px;margin-bottom:12px;"></div>
-            <div style="display:flex;gap:8px;flex-wrap:wrap;">
-              <button class="btn btn-arc" onclick="setProfileContract()">Set Profile Contract</button>
-              <button class="btn btn-secondary" onclick="clearProfileContract()">Clear (Use Local)</button>
-            </div>
-            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
-              <div style="font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:8px;">📄 Contract Source (deploy via Remix IDE)</div>
-              <div style="background:var(--off);border-radius:var(--radius);padding:12px;font-family:monospace;font-size:11px;color:var(--arc);overflow-x:auto;white-space:pre;">// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-contract ProfileRegistry {
-  struct Profile { string username; string bio; string twitter; string pic; uint256 updatedAt; }
-  mapping(address =&gt; Profile) private _profiles;
-  mapping(string =&gt; address) private _usernameTaken;
-  event ProfileUpdated(address indexed user, string username);
-  function setProfile(string calldata username, string calldata bio,
-    string calldata twitter, string calldata pic) external {
-    require(bytes(username).length &gt; 0 &amp;&amp; bytes(username).length &lt;= 30);
-    require(bytes(bio).length &lt;= 200);
-    address ex = _usernameTaken[username];
-    require(ex == address(0) || ex == msg.sender, "Username taken");
-    if (bytes(_profiles[msg.sender].username).length &gt; 0)
-      _usernameTaken[_profiles[msg.sender].username] = address(0);
-    _usernameTaken[username] = msg.sender;
-    _profiles[msg.sender] = Profile(username, bio, twitter, pic, block.timestamp);
-    emit ProfileUpdated(msg.sender, username);
-  }
-  function getProfile(address user) external view returns
-    (string memory, string memory, string memory, string memory, uint256) {
-    Profile storage p = _profiles[user];
-    return (p.username, p.bio, p.twitter, p.pic, p.updatedAt);
-  }
-  function isUsernameTaken(string calldata u) external view returns (bool) {
-    return _usernameTaken[u] != address(0);
-  }
-}</div>
-              <button class="copy-btn" onclick="copyProfileSource()">📋 Copy Source</button>
-              <a href="https://remix.ethereum.org" target="_blank" class="btn btn-secondary btn-sm" style="margin-top:8px;">Open Remix IDE ↗</a>
-            </div>
           </div>
 
           <!-- ── MINT CONTROL ── -->
@@ -1458,35 +1415,180 @@ contract ProfileRegistry {
 ══════════════════════════════════════════════ */
 
 // ── CONFIG ──────────────────────────────────
-const ARC_CHAIN_ID    = 5042002;
-const ARC_CHAIN_HEX   = '0x' + ARC_CHAIN_ID.toString(16);
-const ARC_RPC         = 'https://rpc.testnet.arc.network';
-const ARC_EXPLORER    = 'https://testnet.arcscan.app';
-const USDC_ADDRESS    = '0x3600000000000000000000000000000000000000';
+const ARC_CHAIN_ID     = 5042002;
+const ARC_CHAIN_HEX    = '0x' + ARC_CHAIN_ID.toString(16);
+const ARC_RPC          = 'https://rpc.testnet.arc.network';
+const ARC_EXPLORER     = 'https://testnet.arcscan.app';
+const USDC_ADDRESS     = '0x3600000000000000000000000000000000000000';
 const PLATFORM_FEE_BPS = 250; // 2.5%
 
-// ── ABI ─────────────────────────────────────
+// ── SINGLE CONTRACT ADDRESS (hardcoded, no user setup) ──────
+// This is the upgraded ArcNFT contract that includes NFT marketplace
+// + onchain profile registry in one deployment.
+// Deploy ArcNFTMarketV2.sol (see Admin > Contract Info) to get new address,
+// then replace this value and redeploy your frontend.
+const CONTRACT_ADDRESS = '0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406';
+
+/*
+ ══════════════════════════════════════════════════════════════
+  UPGRADED SOLIDITY CONTRACT — ArcNFTMarketV2.sol
+  Deploy this on Arc Testnet via Remix IDE to get onchain profiles.
+  This is a drop-in upgrade that adds setProfile/getProfile to the
+  existing marketplace contract so everything stays in one address.
+ ══════════════════════════════════════════════════════════════
+
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+contract ArcNFTMarketV2 is ERC721, ERC721Royalty, Ownable, ReentrancyGuard {
+    // ── NFT Marketplace ──
+    struct Listing { address seller; uint256 price; bool active; }
+    mapping(uint256 => Listing) public listings;
+    mapping(uint256 => string)  private _tokenURIs;
+    uint256 public totalMinted;
+    uint256 public totalSales;
+    uint256 public totalVolume;
+    uint256[] private _activeIds;
+    address public immutable USDC;
+    uint256 public constant PLATFORM_FEE_BPS = 250;
+
+    // ── Profile Registry ──
+    struct Profile { string username; string bio; string twitter; string pic; uint256 updatedAt; }
+    mapping(address => Profile)  private _profiles;
+    mapping(string  => address)  private _usernameTaken;
+
+    // ── Events ──
+    event NFTMinted(uint256 indexed tokenId, address indexed creator, string tokenURI, uint96 royaltyBps);
+    event Listed(uint256 indexed tokenId, address indexed seller, uint256 price);
+    event Sold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price);
+    event ProfileUpdated(address indexed user, string username);
+
+    constructor(address usdc) ERC721("ArcNFT","ANFT") Ownable(msg.sender) { USDC = usdc; }
+
+    // ── Mint ──
+    function mint(string calldata uri, uint96 royaltyBps) external returns (uint256) {
+        require(royaltyBps <= 1000, "Max 10%");
+        totalMinted++;
+        uint256 id = totalMinted;
+        _mint(msg.sender, id);
+        _tokenURIs[id] = uri;
+        _setTokenRoyalty(id, msg.sender, royaltyBps);
+        emit NFTMinted(id, msg.sender, uri, royaltyBps);
+        return id;
+    }
+
+    function tokenURI(uint256 id) public view override returns (string memory) { return _tokenURIs[id]; }
+
+    // ── List ──
+    function listNFT(uint256 id, uint256 price) external {
+        require(ownerOf(id) == msg.sender, "Not owner");
+        require(price > 0, "Zero price");
+        if (!listings[id].active) _activeIds.push(id);
+        listings[id] = Listing(msg.sender, price, true);
+        emit Listed(id, msg.sender, price);
+    }
+
+    // ── Delist ──
+    function delistNFT(uint256 id) external {
+        require(listings[id].seller == msg.sender, "Not seller");
+        listings[id].active = false;
+        _removeActive(id);
+    }
+
+    // ── Buy ──
+    function buyNFT(uint256 id) external nonReentrant {
+        Listing memory l = listings[id];
+        require(l.active, "Not listed");
+        require(ownerOf(id) == l.seller, "Seller changed");
+        (address royaltyReceiver, uint256 royaltyAmt) = royaltyInfo(id, l.price);
+        uint256 platformFee = l.price * PLATFORM_FEE_BPS / 10000;
+        uint256 sellerAmt   = l.price - platformFee - royaltyAmt;
+        IERC20(USDC).transferFrom(msg.sender, owner(), platformFee);
+        if (royaltyAmt > 0) IERC20(USDC).transferFrom(msg.sender, royaltyReceiver, royaltyAmt);
+        IERC20(USDC).transferFrom(msg.sender, l.seller, sellerAmt);
+        listings[id].active = false;
+        _removeActive(id);
+        _transfer(l.seller, msg.sender, id);
+        totalSales++;
+        totalVolume += l.price;
+        emit Sold(id, l.seller, msg.sender, l.price);
+    }
+
+    // ── Views ──
+    function getListing(uint256 id) external view returns (address seller, uint256 price, bool active) {
+        Listing storage l = listings[id]; return (l.seller, l.price, l.active);
+    }
+    function getActiveListings() external view returns (uint256[] memory) { return _activeIds; }
+    function getStats() external view returns (uint256 minted, uint256 sales, uint256 volume) {
+        return (totalMinted, totalSales, totalVolume);
+    }
+    function royaltyInfo(uint256 id, uint256 price) public view override(ERC721Royalty)
+        returns (address, uint256) { return super.royaltyInfo(id, price); }
+    function supportsInterface(bytes4 id) public view override(ERC721, ERC721Royalty)
+        returns (bool) { return super.supportsInterface(id); }
+    function _removeActive(uint256 id) internal {
+        for (uint i = 0; i < _activeIds.length; i++) {
+            if (_activeIds[i] == id) { _activeIds[i] = _activeIds[_activeIds.length-1]; _activeIds.pop(); break; }
+        }
+    }
+
+    // ══ PROFILE REGISTRY (onchain — no second contract needed) ══
+    function setProfile(string calldata username, string calldata bio,
+                        string calldata twitter,  string calldata pic) external {
+        require(bytes(username).length > 0 && bytes(username).length <= 30, "Bad username");
+        require(bytes(bio).length <= 200, "Bio too long");
+        address ex = _usernameTaken[username];
+        require(ex == address(0) || ex == msg.sender, "Username taken");
+        if (bytes(_profiles[msg.sender].username).length > 0)
+            _usernameTaken[_profiles[msg.sender].username] = address(0);
+        _usernameTaken[username] = msg.sender;
+        _profiles[msg.sender] = Profile(username, bio, twitter, pic, block.timestamp);
+        emit ProfileUpdated(msg.sender, username);
+    }
+
+    function getProfile(address user) external view
+        returns (string memory username, string memory bio,
+                 string memory twitter, string memory pic, uint256 updatedAt) {
+        Profile storage p = _profiles[user];
+        return (p.username, p.bio, p.twitter, p.pic, p.updatedAt);
+    }
+
+    function isUsernameTaken(string calldata u) external view returns (bool) {
+        return _usernameTaken[u] != address(0);
+    }
+}
+*/
+
+// ── COMBINED ABI (marketplace + profile in one) ──────────────
 const MARKET_ABI = [
-  // Mint
+  // ── NFT Core ──
   "function mint(string uri, uint96 royaltyBps) returns (uint256)",
-  // List/Delist
-  "function listNFT(uint256 tokenId, uint256 price)",
-  "function delistNFT(uint256 tokenId)",
-  // Buy
-  "function buyNFT(uint256 tokenId)",
-  // Views
-  "function getListing(uint256 tokenId) view returns (address seller, uint256 price, bool active)",
-  "function getActiveListings() view returns (uint256[])",
-  "function getStats() view returns (uint256 minted, uint256 sales, uint256 volume)",
   "function ownerOf(uint256 tokenId) view returns (address)",
   "function tokenURI(uint256 tokenId) view returns (string)",
   "function balanceOf(address owner) view returns (uint256)",
-  "function royaltyInfo(uint256 tokenId, uint256 salePrice) view returns (address, uint256)",
   "function totalMinted() view returns (uint256)",
-  // Events
+  "function royaltyInfo(uint256 tokenId, uint256 salePrice) view returns (address, uint256)",
+  // ── Marketplace ──
+  "function listNFT(uint256 tokenId, uint256 price)",
+  "function delistNFT(uint256 tokenId)",
+  "function buyNFT(uint256 tokenId)",
+  "function getListing(uint256 tokenId) view returns (address seller, uint256 price, bool active)",
+  "function getActiveListings() view returns (uint256[])",
+  "function getStats() view returns (uint256 minted, uint256 sales, uint256 volume)",
+  // ── Profile Registry (built-in, same contract) ──
+  "function setProfile(string username, string bio, string twitter, string pic)",
+  "function getProfile(address user) view returns (string username, string bio, string twitter, string pic, uint256 updatedAt)",
+  "function isUsernameTaken(string username) view returns (bool)",
+  // ── Events ──
   "event NFTMinted(uint256 indexed tokenId, address indexed creator, string tokenURI, uint96 royaltyBps)",
   "event Listed(uint256 indexed tokenId, address indexed seller, uint256 price)",
-  "event Sold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price)"
+  "event Sold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price)",
+  "event ProfileUpdated(address indexed user, string username)"
 ];
 
 const USDC_ABI = [
@@ -1496,58 +1598,17 @@ const USDC_ABI = [
   "function decimals() view returns (uint8)"
 ];
 
-// ── PROFILE REGISTRY ABI ─────────────────────
-// Deploy this Solidity contract on Arc Testnet:
-// https://gist.github.com/arcnft/profileregistry
-/*
-  Contract source (for reference):
-  // SPDX-License-Identifier: MIT
-  pragma solidity ^0.8.20;
-  contract ProfileRegistry {
-    struct Profile { string username; string bio; string twitter; string pic; uint256 updatedAt; }
-    mapping(address => Profile) private _profiles;
-    mapping(string => address) private _usernameTaken;
-    event ProfileUpdated(address indexed user, string username);
-    function setProfile(string calldata username, string calldata bio, string calldata twitter, string calldata pic) external {
-      require(bytes(username).length > 0 && bytes(username).length <= 30, "Bad username");
-      require(bytes(bio).length <= 200, "Bio too long");
-      address existing = _usernameTaken[username];
-      require(existing == address(0) || existing == msg.sender, "Username taken");
-      if (bytes(_profiles[msg.sender].username).length > 0) {
-        _usernameTaken[_profiles[msg.sender].username] = address(0);
-      }
-      _usernameTaken[username] = msg.sender;
-      _profiles[msg.sender] = Profile(username, bio, twitter, pic, block.timestamp);
-      emit ProfileUpdated(msg.sender, username);
-    }
-    function getProfile(address user) external view returns (string memory username, string memory bio, string memory twitter, string memory pic, uint256 updatedAt) {
-      Profile storage p = _profiles[user];
-      return (p.username, p.bio, p.twitter, p.pic, p.updatedAt);
-    }
-    function isUsernameTaken(string calldata username) external view returns (bool) {
-      return _usernameTaken[username] != address(0);
-    }
-  }
-*/
-const PROFILE_REGISTRY_ABI = [
-  "function setProfile(string username, string bio, string twitter, string pic)",
-  "function getProfile(address user) view returns (string username, string bio, string twitter, string pic, uint256 updatedAt)",
-  "function isUsernameTaken(string username) view returns (bool)",
-  "event ProfileUpdated(address indexed user, string username)"
-];
-
 // ── STATE ───────────────────────────────────
 let provider, signer, walletAddress;
-let marketContract, usdcContract, profileContract;
-let CONTRACT_ADDRESS = '0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406';
-let PROFILE_CONTRACT_ADDRESS = localStorage.getItem('arcnft_profile_contract') || '';
-let pendingBuyTokenId = null;
+let marketContract, usdcContract;
+let pendingBuyTokenId  = null;
 let pendingListTokenId = null;
-let nftMetadataCache = {};
+let nftMetadataCache   = {};
+// In-memory profile cache — populated lazily from chain
+const _profileCache = {};
 
 // ── INIT ────────────────────────────────────
 window.onload = async () => {
-  // Explicitly hide all panels, show only marketplace
   document.querySelectorAll('.panel').forEach(p => {
     p.style.display = 'none';
     p.classList.remove('active');
@@ -1555,14 +1616,9 @@ window.onload = async () => {
   const mp = document.getElementById('tab-marketplace');
   if (mp) { mp.style.display = 'block'; mp.classList.add('active'); }
 
-  updateContractDisplay();
   livePreviewSetup();
   updateRoyaltyPreview();
-  if (CONTRACT_ADDRESS) loadStats();
-
-  // Restore profile contract input if saved
-  const pcInput = document.getElementById('profileContractInput');
-  if (pcInput && PROFILE_CONTRACT_ADDRESS) pcInput.value = PROFILE_CONTRACT_ADDRESS;
+  loadStats(); // always try — contract address is hardcoded
 };
 
 // ── WALLET ──────────────────────────────────
@@ -1607,10 +1663,6 @@ async function onWalletConnected() {
 
   usdcContract = new ethers.Contract(USDC_ADDRESS, USDC_ABI, signer);
   await refreshBalance();
-
-  if (PROFILE_CONTRACT_ADDRESS) {
-    profileContract = new ethers.Contract(PROFILE_CONTRACT_ADDRESS, PROFILE_REGISTRY_ABI, signer);
-  }
 
   if (CONTRACT_ADDRESS) {
     marketContract = new ethers.Contract(CONTRACT_ADDRESS, MARKET_ABI, signer);
@@ -1661,36 +1713,6 @@ async function addArcNetwork() {
     toast('Arc Testnet added to MetaMask!', 'success');
   } catch(e) {
     toast('Could not add network: ' + e.message, 'error');
-  }
-}
-
-// ── CONTRACT SETUP ───────────────────────────
-function setContractAddress() {
-  const addr = document.getElementById('contractInput').value.trim();
-  if (!ethers.isAddress(addr)) {
-    toast('Invalid address', 'error'); return;
-  }
-  CONTRACT_ADDRESS = addr;
-  localStorage.setItem('arcnft_contract', addr);
-  updateContractDisplay();
-  if (signer) {
-    marketContract = new ethers.Contract(CONTRACT_ADDRESS, MARKET_ABI, signer);
-    loadMarketplace();
-    loadStats();
-  }
-  toast('Contract address set! Marketplace is now live.', 'success');
-}
-
-function updateContractDisplay() {
-  const el = document.getElementById('contractDisplay');
-  const link = document.getElementById('explorerLink');
-  if (CONTRACT_ADDRESS) {
-    el.textContent = CONTRACT_ADDRESS;
-    link.href = `${ARC_EXPLORER}/address/${CONTRACT_ADDRESS}`;
-    link.style.display = 'inline-flex';
-  } else {
-    el.textContent = 'Not set — deploy & configure above';
-    link.style.display = 'none';
   }
 }
 
@@ -2215,7 +2237,7 @@ async function loadMarketplace() {
       try { [seller, price] = await marketContract.getListing(id); } catch {}
       return { tokenId: Number(id), meta, price, seller };
     }));
-    // Prefetch creator profiles from chain so names/avatars show correctly
+    // Prefetch seller profiles from chain so names show in marketplace
     await prefetchProfiles(allMarketplaceData.map(d => d.seller).filter(Boolean));
     filterMarketplace();
     await loadStats();
@@ -2504,71 +2526,6 @@ async function executeBulkMint() {
   await loadMyNFTs();
 }
 
-// ── Profile Contract Setup ──
-function setProfileContract() {
-  const addr = document.getElementById('profileContractInput').value.trim();
-  const statusEl = document.getElementById('profileContractStatus');
-  if (!addr) {
-    clearProfileContract(); return;
-  }
-  if (!ethers.isAddress(addr)) {
-    statusEl.innerHTML = '<span style="color:var(--danger)">❌ Invalid address</span>';
-    document.getElementById('profileContractInput').style.borderColor = 'var(--danger)';
-    return;
-  }
-  PROFILE_CONTRACT_ADDRESS = addr;
-  localStorage.setItem('arcnft_profile_contract', addr);
-  if (signer) {
-    profileContract = new ethers.Contract(addr, PROFILE_REGISTRY_ABI, signer);
-    statusEl.innerHTML = `<span style="color:var(--arc)">✅ Profile contract set! <a href="${ARC_EXPLORER}/address/${addr}" target="_blank" class="explorer-link">View on ArcScan ↗</a></span>`;
-  } else {
-    statusEl.innerHTML = `<span style="color:var(--arc)">✅ Saved. Will activate on next wallet connect.</span>`;
-  }
-  // Clear profile cache so data re-fetches from chain
-  Object.keys(_profileCache).forEach(k => delete _profileCache[k]);
-  toast('✅ Profile contract set! Profiles are now onchain.', 'success');
-}
-
-function clearProfileContract() {
-  PROFILE_CONTRACT_ADDRESS = '';
-  profileContract = null;
-  localStorage.removeItem('arcnft_profile_contract');
-  const statusEl = document.getElementById('profileContractStatus');
-  if (statusEl) statusEl.innerHTML = '<span style="color:var(--ink3)">Cleared — profiles will save locally.</span>';
-  document.getElementById('profileContractInput').value = '';
-  toast('Profile contract cleared. Using local storage.', 'success');
-}
-
-function copyProfileSource() {
-  const src = `// SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
-contract ProfileRegistry {
-  struct Profile { string username; string bio; string twitter; string pic; uint256 updatedAt; }
-  mapping(address => Profile) private _profiles;
-  mapping(string => address) private _usernameTaken;
-  event ProfileUpdated(address indexed user, string username);
-  function setProfile(string calldata username, string calldata bio, string calldata twitter, string calldata pic) external {
-    require(bytes(username).length > 0 && bytes(username).length <= 30, "Bad username");
-    require(bytes(bio).length <= 200, "Bio too long");
-    address ex = _usernameTaken[username];
-    require(ex == address(0) || ex == msg.sender, "Username taken");
-    if (bytes(_profiles[msg.sender].username).length > 0)
-      _usernameTaken[_profiles[msg.sender].username] = address(0);
-    _usernameTaken[username] = msg.sender;
-    _profiles[msg.sender] = Profile(username, bio, twitter, pic, block.timestamp);
-    emit ProfileUpdated(msg.sender, username);
-  }
-  function getProfile(address user) external view returns (string memory, string memory, string memory, string memory, uint256) {
-    Profile storage p = _profiles[user];
-    return (p.username, p.bio, p.twitter, p.pic, p.updatedAt);
-  }
-  function isUsernameTaken(string calldata u) external view returns (bool) {
-    return _usernameTaken[u] != address(0);
-  }
-}`;
-  navigator.clipboard.writeText(src).then(() => toast('📋 Contract source copied!', 'success')).catch(() => toast('Copy failed', 'error'));
-}
-
 // ══════════════════════════════════════════════
 //  👤 CREATOR PROFILES
 // ══════════════════════════════════════════════
@@ -2611,7 +2568,7 @@ async function loadCreators() {
       return;
     }
 
-    // Prefetch all profiles from chain at once
+    // Batch-fetch all creator profiles from chain
     await prefetchProfiles(creators.map(([addr]) => addr));
 
     listEl.innerHTML = creators.map(([addr, data]) => {
@@ -2657,9 +2614,9 @@ async function openCreatorProfileFull(addr) {
   listEl.style.display = 'none';
   detailEl.style.display = 'block';
 
-  // Fetch profile from chain (may already be cached)
+  // Always fetch fresh from chain (cache hit = instant)
   const profile = await fetchOnchainProfile(addr);
-  const displayName = profile?.username || (addr.slice(0,6) + '…' + addr.slice(-4));
+  const displayName   = profile?.username || (addr.slice(0,6) + '…' + addr.slice(-4));
   const avatarContent = getDisplayAvatar(addr);
 
   document.getElementById('detailAvatar').innerHTML = avatarContent;
@@ -3106,94 +3063,94 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ══════════════════════════════════════════════
-//  👤 CREATOR PROFILE SETUP — ONCHAIN
+//  👤 CREATOR PROFILE — ONCHAIN via same contract
 // ══════════════════════════════════════════════
 
-let _selectedProfilePic = '';  // final image URL chosen
-let _picMode = 'nft';          // 'nft' or 'url'
+let _selectedProfilePic = '';
+let _picMode = 'nft';
 
-// In-memory profile cache for this session (address -> profile object)
-const _profileCache = {};
-
-// ── Fetch profile from chain (with cache) ──
+// ── Fetch profile from chain (lazy, cached) ──
 async function fetchOnchainProfile(addr) {
   if (_profileCache[addr] !== undefined) return _profileCache[addr];
-  if (!profileContract) {
-    // Fallback to localStorage if no profile contract set
-    try { const p = JSON.parse(localStorage.getItem(`arcnft_profile_${addr}`) || 'null'); _profileCache[addr] = p; return p; } catch { return null; }
-  }
+  if (!marketContract) { _profileCache[addr] = null; return null; }
   try {
-    const [username, bio, twitter, pic, updatedAt] = await profileContract.getProfile(addr);
+    const [username, bio, twitter, pic, updatedAt] = await marketContract.getProfile(addr);
     if (!username) { _profileCache[addr] = null; return null; }
-    const profile = { username, bio, twitter, pic, updatedAt: Number(updatedAt) * 1000, address: addr };
-    _profileCache[addr] = profile;
-    return profile;
+    const p = { username, bio, twitter, pic, updatedAt: Number(updatedAt) * 1000, address: addr };
+    _profileCache[addr] = p;
+    return p;
   } catch { _profileCache[addr] = null; return null; }
 }
 
-// ── Get profile synchronously from cache only ──
+// ── Sync getter from cache only ──
 function getCreatorProfile(addr) {
   return _profileCache[addr] || null;
 }
 
-// ── Save profile onchain ──
+// ── Batch pre-fetch ──
+async function prefetchProfiles(addresses) {
+  const uniq = [...new Set(addresses)].filter(a => a && _profileCache[a] === undefined);
+  if (!uniq.length) return;
+  await Promise.all(uniq.map(a => fetchOnchainProfile(a)));
+}
+
+// ── Display helpers ──
+function getDisplayName(addr) {
+  const p = getCreatorProfile(addr);
+  return p?.username || (addr.slice(0,6) + '…' + addr.slice(-4));
+}
+function getDisplayAvatar(addr) {
+  const p = getCreatorProfile(addr);
+  if (p?.pic) return `<img src="${escHtml(p.pic)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none'">`;
+  return ['🎨','🖼️','🎭','🌟','💎','🔮'][parseInt(addr.slice(2,4),16) % 6];
+}
+
+// ── Save profile onchain via same contract ──
 async function saveCreatorProfile() {
-  if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
+  if (!walletAddress)   { toast('Connect wallet first', 'error'); return; }
+  if (!marketContract)  { toast('Wallet not connected to contract', 'error'); return; }
 
   const username = document.getElementById('profileUsernameInput').value.trim();
   const bio      = document.getElementById('profileBioInput').value.trim();
   const twitter  = document.getElementById('profileTwitterInput').value.trim();
   const pic      = _selectedProfilePic;
 
-  if (!username) { toast('Please enter a username', 'error'); return; }
-  if (username.includes(' ')) { toast('Username cannot contain spaces', 'error'); return; }
-  if (username.length > 30)   { toast('Username max 30 characters', 'error'); return; }
-  if (bio.length > 200)       { toast('Bio max 200 characters', 'error'); return; }
+  if (!username)             { toast('Please enter a username', 'error'); return; }
+  if (username.includes(' ')){ toast('Username cannot contain spaces', 'error'); return; }
+  if (username.length > 30)  { toast('Username max 30 characters', 'error'); return; }
+  if (bio.length > 200)      { toast('Bio max 200 characters', 'error'); return; }
 
-  // If no profile contract, fall back to localStorage with a warning
-  if (!profileContract) {
-    const profile = { username, bio, twitter, pic, address: walletAddress, updatedAt: Date.now() };
-    localStorage.setItem(`arcnft_profile_${walletAddress}`, JSON.stringify(profile));
-    _profileCache[walletAddress] = profile;
-    toast('⚠️ Profile saved locally (no Profile Contract set). Set it in Admin tab for onchain storage.', 'success');
-    updateProfilePreview(profile);
-    return;
-  }
-
-  const btn = document.querySelector('#tab-myprofile .btn-arc.btn-full');
+  const btn = document.getElementById('saveProfileBtn');
   if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Saving onchain…'; }
 
   try {
-    // Check username availability (skip if same user already has it)
-    const isTaken = await profileContract.isUsernameTaken(username);
-    if (isTaken) {
-      // It might be taken by current user — fetch their profile
+    // Check username availability
+    const taken = await marketContract.isUsernameTaken(username);
+    if (taken) {
       const existing = await fetchOnchainProfile(walletAddress);
       if (existing?.username !== username) {
-        toast('Username already taken. Choose another.', 'error');
-        if (btn) { btn.disabled = false; btn.textContent = '💾 Save Profile'; }
+        toast('❌ Username already taken. Choose another.', 'error');
+        if (btn) { btn.disabled = false; btn.textContent = '💾 Save Profile Onchain'; }
         return;
       }
     }
 
-    const tx = await profileContract.setProfile(username, bio, twitter, pic);
-    toast(`Saving profile… <a href="${ARC_EXPLORER}/tx/${tx.hash}" target="_blank">View tx ↗</a>`);
+    const tx = await marketContract.setProfile(username, bio, twitter, pic);
+    toast(`⏳ Saving profile… <a href="${ARC_EXPLORER}/tx/${tx.hash}" target="_blank">View tx ↗</a>`);
     await tx.wait();
 
-    // Update cache
-    const profile = { username, bio, twitter, pic, address: walletAddress, updatedAt: Date.now() };
-    _profileCache[walletAddress] = profile;
-
-    toast('✅ Profile saved onchain!', 'success');
-    updateProfilePreview(profile);
+    // Update cache immediately
+    _profileCache[walletAddress] = { username, bio, twitter, pic, updatedAt: Date.now(), address: walletAddress };
+    toast('✅ Profile saved onchain permanently!', 'success');
+    updateProfilePreview(_profileCache[walletAddress]);
   } catch(e) {
     toast('Save failed: ' + (e.reason || e.message), 'error');
   }
 
-  if (btn) { btn.disabled = false; btn.textContent = '💾 Save Profile'; }
+  if (btn) { btn.disabled = false; btn.textContent = '💾 Save Profile Onchain'; }
 }
 
-// ── Load my profile from chain into form ──
+// ── Load my profile into form ──
 async function loadMyProfile() {
   if (!walletAddress) {
     document.getElementById('profileNotConnected').style.display = 'block';
@@ -3204,30 +3161,20 @@ async function loadMyProfile() {
   document.getElementById('profileSetupArea').style.display   = 'block';
   document.getElementById('profileAddrPreview').textContent   = walletAddress.slice(0,6) + '…' + walletAddress.slice(-4);
 
-  // Show onchain status
-  const statusEl = document.getElementById('profileOnchainStatus');
-  if (statusEl) {
-    if (profileContract) {
-      statusEl.innerHTML = `<span style="color:var(--arc)">🔗 Onchain storage active · <a href="${ARC_EXPLORER}/address/${PROFILE_CONTRACT_ADDRESS}" target="_blank" class="explorer-link">View contract ↗</a></span>`;
-    } else {
-      statusEl.innerHTML = `<span style="color:var(--danger)">⚠️ No Profile Contract set — data saves locally. Set it in <button onclick="switchTab('admin')" style="background:none;border:none;color:var(--usdc);cursor:pointer;font-size:inherit;font-weight:600;">Admin tab</button></span>`;
-    }
-  }
+  // Show loading state
+  const saveBtn = document.getElementById('saveProfileBtn');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.innerHTML = '<span class="spinner"></span> Loading…'; }
 
-  // Load saved profile from chain
   const saved = await fetchOnchainProfile(walletAddress);
   if (saved) {
-    document.getElementById('profileUsernameInput').value = saved.username || '';
-    document.getElementById('profileBioInput').value      = saved.bio      || '';
-    document.getElementById('profileTwitterInput').value  = saved.twitter  || '';
+    document.getElementById('profileUsernameInput').value      = saved.username || '';
+    document.getElementById('profileBioInput').value           = saved.bio      || '';
+    document.getElementById('profileTwitterInput').value       = saved.twitter  || '';
     document.getElementById('profileUsernamePreview').textContent = saved.username || 'Your Username';
-    if (saved.pic) {
-      _selectedProfilePic = saved.pic;
-      setAvatarPreview(saved.pic);
-    }
+    if (saved.pic) { _selectedProfilePic = saved.pic; setAvatarPreview(saved.pic); }
   }
 
-  // Load NFT gallery
+  if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = '💾 Save Profile Onchain'; }
   loadNFTGalleryForProfile();
 }
 
@@ -3314,28 +3261,6 @@ function updateProfilePreview(profile) {
   if (profile.pic) setAvatarPreview(profile.pic);
 }
 
-// ── Helper: get display name for a wallet (username or short addr) ──
-function getDisplayName(addr) {
-  const profile = getCreatorProfile(addr);
-  return profile?.username || (addr.slice(0,6) + '…' + addr.slice(-4));
-}
-
-// ── Helper: get avatar for a wallet ──
-function getDisplayAvatar(addr) {
-  const profile = getCreatorProfile(addr);
-  if (profile?.pic) return `<img src="${escHtml(profile.pic)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none'">`;
-  const emoji = ['🎨','🖼️','🎭','🌟','💎','🔮'][parseInt(addr.slice(2,4),16) % 6];
-  return emoji;
-}
-
-// ── Pre-fetch profiles for a list of addresses (batch) ──
-async function prefetchProfiles(addresses) {
-  const unique = [...new Set(addresses)].filter(a => _profileCache[a] === undefined);
-  if (unique.length === 0) return;
-  await Promise.all(unique.map(addr => fetchOnchainProfile(addr)));
-}
-
-
 // Load banner on page start
 window.addEventListener('load', () => {
   const banner = localStorage.getItem('admin_banner');
@@ -3347,12 +3272,6 @@ window.addEventListener('load', () => {
     b.style.display = 'block';
   }
   checkAdminRestrictions();
-
-  // Show profile contract status in admin if already set
-  if (PROFILE_CONTRACT_ADDRESS) {
-    const statusEl = document.getElementById('profileContractStatus');
-    if (statusEl) statusEl.innerHTML = `<span style="color:var(--arc)">✅ Active · <a href="${ARC_EXPLORER}/address/${PROFILE_CONTRACT_ADDRESS}" target="_blank" class="explorer-link">View on ArcScan ↗</a></span>`;
-  }
 });
 
 </script>
