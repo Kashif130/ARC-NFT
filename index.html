@@ -540,6 +540,60 @@ code{
 .creator-stat-val{font-family:var(--font-display);font-size:18px;color:var(--ink);display:block;}
 .creator-stat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--ink3);}
 
+/* ── CREATOR PROFILE SETUP ── */
+.creator-setup-card{
+  background:linear-gradient(135deg,var(--arc-light),var(--usdc-light));
+  border:1px solid rgba(26,107,94,.2);
+  border-radius:var(--radius-lg);
+  padding:24px;
+  margin-bottom:24px;
+}
+.creator-setup-title{font-family:var(--font-display);font-size:18px;margin-bottom:4px;}
+.creator-setup-sub{font-size:13px;color:var(--ink3);margin-bottom:20px;}
+.profile-pic-options{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.pic-option-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:var(--radius);
+  font-size:13px;font-weight:500;cursor:pointer;
+  border:1.5px solid var(--border2);background:var(--white);
+  transition:all .15s;
+}
+.pic-option-btn.active{border-color:var(--arc);background:var(--arc-light);color:var(--arc);}
+.pic-option-btn:hover{border-color:var(--arc);}
+.creator-avatar-lg{
+  width:80px;height:80px;border-radius:50%;
+  background:linear-gradient(135deg,var(--arc-light),var(--usdc-light));
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:36px;flex-shrink:0;overflow:hidden;
+}
+.creator-avatar-lg img{width:100%;height:100%;object-fit:cover;}
+.nft-gallery-picker{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));
+  gap:10px;margin-top:10px;max-height:240px;overflow-y:auto;
+  padding:4px;
+}
+.gallery-nft-item{
+  border-radius:var(--radius);overflow:hidden;
+  border:2px solid var(--border);cursor:pointer;
+  aspect-ratio:1;transition:all .15s;
+  display:flex;align-items:center;justify-content:center;
+  background:var(--off);font-size:28px;
+}
+.gallery-nft-item img{width:100%;height:100%;object-fit:cover;}
+.gallery-nft-item:hover{border-color:var(--arc);}
+.gallery-nft-item.selected{border-color:var(--arc);box-shadow:0 0 0 2px rgba(26,107,94,.3);}
+.profile-badge{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:3px 10px;border-radius:20px;
+  background:var(--arc-light);color:var(--arc);
+  font-size:11px;font-weight:600;margin-left:8px;
+}
+.creator-username-display{
+  font-family:var(--font-display);font-size:20px;
+  color:var(--ink);display:inline;
+}
+
 /* ── PRICE HISTORY CHART ── */
 .price-chart-wrap{
   background:var(--white);border:1px solid var(--border);
@@ -699,6 +753,7 @@ code{
     <button class="tab-btn" onclick="switchTab('mint')">Mint NFT</button>
     <button class="tab-btn" onclick="switchTab('bulkmint')">Bulk Mint</button>
     <button class="tab-btn" onclick="switchTab('mynfts')">My NFTs</button>
+    <button class="tab-btn" onclick="switchTab('myprofile')">My Profile</button>
     <button class="tab-btn" onclick="switchTab('creators')">Creators</button>
     <button class="tab-btn" id="adminTabBtn" onclick="switchTab('admin')" style="display:none">⚙️ Admin</button>
   </div>
@@ -739,15 +794,15 @@ code{
 
       <!-- Search Bar -->
       <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="🔍 NFT naam ya Token ID se dhundo…" oninput="filterMarketplace()"/>
+        <input type="text" id="searchInput" placeholder="🔍 Search by NFT name or Token ID…" oninput="filterMarketplace()"/>
         <div class="search-sort">
           <label>Sort:</label>
           <select id="sortSelect" onchange="filterMarketplace()">
             <option value="default">Default</option>
             <option value="price-asc">Price: Low → High</option>
             <option value="price-desc">Price: High → Low</option>
-            <option value="id-asc">Token ID: Purana</option>
-            <option value="id-desc">Token ID: Naya</option>
+            <option value="id-asc">Token ID: Oldest</option>
+            <option value="id-desc">Token ID: Newest</option>
           </select>
         </div>
         <div style="display:flex;gap:8px;align-items:center;">
@@ -865,7 +920,7 @@ code{
     <div class="section">
       <div class="section-head">
         <h2 class="section-title">🖼️ Bulk Mint</h2>
-        <span style="font-size:13px;color:var(--ink3)">Ek saath kai NFTs mint karo</span>
+        <span style="font-size:13px;color:var(--ink3)">Mint multiple NFTs at once</span>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;" class="bulk-layout">
         <div class="card">
@@ -899,11 +954,97 @@ code{
         <div class="card" style="position:sticky;top:140px;align-self:start;">
           <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink3);margin-bottom:16px">📋 Summary</div>
           <div id="bulkMintSummary" style="font-size:14px;color:var(--ink3);text-align:center;padding:20px;">
-            NFT rows add karo left side mein
+            Add NFT rows on the left to get started
           </div>
           <div class="info-bar" style="margin-top:16px;margin-bottom:0;">
-            ℹ️ Har NFT separately blockchain pe mint hoga. Ek ek karke MetaMask confirm karna hoga.
+            ℹ️ Each NFT is minted separately on-chain. You'll need to confirm each transaction in MetaMask.
           </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ MY PROFILE TAB ══════════════════════ -->
+  <div id="tab-myprofile" class="panel">
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">👤 My Creator Profile</h2>
+      </div>
+
+      <!-- Not connected state -->
+      <div id="profileNotConnected" class="empty" style="display:none">
+        <span class="empty-icon">🔌</span>
+        <div class="empty-title">Connect your wallet first</div>
+        <p>Connect MetaMask to set up your creator profile.</p>
+        <button class="btn btn-primary" style="margin-top:16px" onclick="connectWallet()">Connect Wallet</button>
+      </div>
+
+      <!-- Profile setup form -->
+      <div id="profileSetupArea" style="display:none;max-width:680px;">
+
+        <!-- Live preview -->
+        <div class="creator-setup-card">
+          <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <div class="creator-avatar-lg" id="profileAvatarPreview">👤</div>
+            <div>
+              <div class="creator-username-display" id="profileUsernamePreview">Your Username</div>
+              <span class="profile-badge">✨ Creator</span>
+              <div style="font-size:12px;color:var(--ink3);font-family:monospace;margin-top:6px;" id="profileAddrPreview">—</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Form card -->
+        <div class="card">
+          <h3 style="font-family:var(--font-display);font-size:18px;margin-bottom:20px;">Edit Profile</h3>
+
+          <!-- Username -->
+          <div class="form-group">
+            <label>Username *</label>
+            <input type="text" id="profileUsernameInput" placeholder="e.g. CryptoArtist, PixelKing…" maxlength="30"
+                   oninput="document.getElementById('profileUsernamePreview').textContent = this.value || 'Your Username'"/>
+            <p class="hint">Choose a unique display name (max 30 characters, no spaces).</p>
+          </div>
+
+          <!-- Profile picture source -->
+          <div class="form-group">
+            <label>Profile Picture</label>
+            <div class="profile-pic-options">
+              <button class="pic-option-btn active" id="picOptNFT" onclick="switchPicOption('nft')">🖼️ From My NFTs</button>
+              <button class="pic-option-btn" id="picOptURL" onclick="switchPicOption('url')">🔗 Custom URL</button>
+            </div>
+
+            <!-- NFT Gallery Picker -->
+            <div id="nftGalleryPicker">
+              <p style="font-size:13px;color:var(--ink3);margin-bottom:8px;">Select one of your NFTs as your profile picture:</p>
+              <div id="profileNFTGallery" class="nft-gallery-picker">
+                <div style="grid-column:1/-1;text-align:center;color:var(--ink3);padding:20px;font-size:13px;">Loading your NFTs…</div>
+              </div>
+              <p class="hint" style="margin-top:8px;">Click any NFT to use its image as your avatar.</p>
+            </div>
+
+            <!-- URL Input -->
+            <div id="customURLPicker" style="display:none;">
+              <input type="url" id="profilePicURLInput" placeholder="https://… (direct image link)"
+                     oninput="updateProfilePicFromURL(this.value)"/>
+              <p class="hint">Paste a direct link to any image (IPFS, Arweave, or HTTPS).</p>
+            </div>
+          </div>
+
+          <!-- Bio -->
+          <div class="form-group">
+            <label>Bio (Optional)</label>
+            <textarea id="profileBioInput" placeholder="Tell the world about your art…" style="min-height:70px;" maxlength="200"></textarea>
+            <p class="hint">Max 200 characters.</p>
+          </div>
+
+          <!-- Twitter / X -->
+          <div class="form-group">
+            <label>Twitter / X Handle (Optional)</label>
+            <input type="text" id="profileTwitterInput" placeholder="@YourHandle"/>
+          </div>
+
+          <button class="btn btn-arc btn-full" onclick="saveCreatorProfile()">💾 Save Profile</button>
         </div>
       </div>
     </div>
@@ -926,10 +1067,11 @@ code{
       <div id="creatorDetail" style="display:none;">
         <button class="btn btn-secondary btn-sm" style="margin-bottom:20px;" onclick="closeCreatorDetail()">← Back to Creators</button>
         <div class="creator-header">
-          <div class="creator-avatar" id="detailAvatar">👤</div>
+          <div class="creator-avatar" id="detailAvatar" style="overflow:hidden;">👤</div>
           <div class="creator-info">
             <div class="creator-name" id="detailName">—</div>
             <div class="creator-addr" id="detailAddr">—</div>
+            <div id="detailExtraInfo" style="margin-top:4px;"></div>
             <div class="creator-stats">
               <div class="creator-stat"><span class="creator-stat-val" id="detailMinted">—</span><span class="creator-stat-lbl">Minted</span></div>
               <div class="creator-stat"><span class="creator-stat-val" id="detailListed">—</span><span class="creator-stat-lbl">Listed</span></div>
@@ -1212,7 +1354,7 @@ code{
         <input type="number" id="offerPrice" placeholder="e.g. 5.00" min="0.01" step="0.01"/>
         <span class="input-suffix">USDC</span>
       </div>
-      <p class="hint">Seller ko notification milegi. Woh accept ya reject kar sakte hain.</p>
+      <p class="hint">The seller will be notified. They can accept or reject your offer.</p>
     </div>
     <div class="form-group">
       <label>Message (Optional)</label>
@@ -1810,7 +1952,7 @@ function switchTab(tab) {
   }
 
   // Highlight selected tab button
-  const tabOrder = ['marketplace','mint','bulkmint','mynfts','creators','admin'];
+  const tabOrder = ['marketplace','mint','bulkmint','mynfts','myprofile','creators','admin'];
   const idx = tabOrder.indexOf(tab);
   const btns = document.querySelectorAll('.tab-btn');
   if (btns[idx]) btns[idx].classList.add('active');
@@ -1819,6 +1961,7 @@ function switchTab(tab) {
   if (tab === 'marketplace' && marketContract) loadMarketplace();
   if (tab === 'mynfts' && marketContract) loadMyNFTs();
   if (tab === 'creators' && marketContract) loadCreators();
+  if (tab === 'myprofile') loadMyProfile();
   if (tab === 'bulkmint') initBulkMint();
   if (tab === 'admin' && isAdmin && marketContract) loadAdminData();
 }
@@ -2004,7 +2147,7 @@ function filterMarketplace() {
   }
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">Koi match nahi mila</div><p>Doosra naam ya price try karo.</p></div>`;
+    grid.innerHTML = `<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">No results found</div><p>Try a different name or price range.</p></div>`;
     return;
   }
 
@@ -2030,7 +2173,7 @@ function filterMarketplace() {
     <div class="nft-name">${escHtml(meta.name || `NFT #${tokenId}`)}</div>
     <div class="nft-creator">
       Token #${tokenId} · 
-      <span class="explorer-link" style="cursor:pointer" onclick="event.stopPropagation();openCreatorProfile('${escHtml(seller)}')">👤 Creator</span>
+      <span class="explorer-link" style="cursor:pointer" onclick="event.stopPropagation();openCreatorProfile('${escHtml(seller)}')">👤 ${escHtml(getDisplayName(seller))}</span>
     </div>
     <div class="nft-footer">
       <div class="nft-price"><span class="nft-price-val">${priceStr}</span><span class="nft-price-sym">USDC</span></div>
@@ -2098,23 +2241,23 @@ function updateBulkBuyBar() {
 
 async function executeBulkBuy() {
   if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
-  if (bulkBuySelected.size === 0) { toast('Koi NFT select nahi kiya', 'error'); return; }
+  if (bulkBuySelected.size === 0) { toast('No NFTs selected', 'error'); return; }
   const ids = [...bulkBuySelected];
-  if (!confirm(`${ids.length} NFTs kharidna chahte ho? Har ek ke liye alag transaction hogi.`)) return;
+  if (!confirm(`You are about to buy ${ids.length} NFTs. Each will require a separate transaction.`)) return;
 
   for (const tokenId of ids) {
     try {
       const [,price] = await marketContract.getListing(tokenId);
       const allowance = await usdcContract.allowance(walletAddress, CONTRACT_ADDRESS);
       if (allowance < price) {
-        toast(`NFT #${tokenId}: USDC approve ho raha hai…`);
+        toast(`NFT #${tokenId}: Approving USDC…`);
         const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, price);
         await approveTx.wait();
       }
-      toast(`NFT #${tokenId}: Kharid raha hoon…`);
+      toast(`NFT #${tokenId}: Purchasing…`);
       const buyTx = await marketContract.buyNFT(tokenId);
       await buyTx.wait();
-      toast(`✅ NFT #${tokenId} kharid liya!`, 'success');
+      toast(`✅ NFT #${tokenId} purchased!`, 'success');
     } catch(e) {
       toast(`❌ NFT #${tokenId} failed: ${e.reason || e.message}`, 'error');
     }
@@ -2199,7 +2342,7 @@ function updateBulkMintSummary() {
           <span style="color:var(--ink3)">Incomplete:</span>
           <strong style="color:var(--danger)">${rows.length - valid}</strong>
         </div>
-        ${valid > 0 ? `<div class="nft-badge badge-listed" style="text-align:center;padding:8px;">${valid} NFTs mint honge</div>` : ''}
+        ${valid > 0 ? `<div class="nft-badge badge-listed" style="text-align:center;padding:8px;">${valid} NFTs ready to mint</div>` : ''}
       </div>`;
   }
 }
@@ -2216,8 +2359,8 @@ async function executeBulkMint() {
     if (name && img) nfts.push({ name, img });
   });
 
-  if (nfts.length === 0) { toast('Koi valid NFT nahi mila', 'error'); return; }
-  if (!confirm(`${nfts.length} NFTs mint karna chahte ho? Har ek ke liye MetaMask confirm karna hoga.`)) return;
+  if (nfts.length === 0) { toast('No valid NFTs found', 'error'); return; }
+  if (!confirm(`Mint ${nfts.length} NFTs? You will need to confirm each transaction in MetaMask.`)) return;
 
   const royBps = Math.round(parseFloat(document.getElementById('bulkDefaultRoyalty')?.value || 5) * 100);
   const progressDiv = document.getElementById('bulkMintProgress');
@@ -2236,21 +2379,20 @@ async function executeBulkMint() {
       const meta   = JSON.stringify({ name: nft.name, description: '', image: nft.img });
       const metaURI = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(meta)));
       const tx = await marketContract.mint(metaURI, royBps);
-      logEl.innerHTML += `<div class="bulk-log-item">⏳ ${escHtml(nft.name)}: Tx sent…</div>`;
+      logEl.innerHTML += `<div class="bulk-log-item">⏳ ${escHtml(nft.name)}: Sending tx…</div>`;
       const receipt = await tx.wait();
       done++;
       const pct = Math.round(done / nfts.length * 100);
       fillEl.style.width = pct + '%';
       textEl.textContent = `${done}/${nfts.length}`;
-      logEl.innerHTML += `<div class="bulk-log-item" style="color:var(--arc)">✅ ${escHtml(nft.name)} minted!</div>`;
-      logEl.scrollTop = logEl.scrollHeight;
+      logEl.innerHTML += `<div class="bulk-log-item" style="color:var(--arc)">✅ ${escHtml(nft.name)} minted!</div>`;      logEl.scrollTop = logEl.scrollHeight;
     } catch(e) {
       logEl.innerHTML += `<div class="bulk-log-item" style="color:var(--danger)">❌ ${escHtml(nft.name)}: ${e.reason || e.message}</div>`;
       logEl.scrollTop = logEl.scrollHeight;
     }
   }
 
-  toast(`🎉 ${done}/${nfts.length} NFTs minted!`, 'success');
+  toast(`🎉 ${done}/${nfts.length} NFTs minted successfully!`, 'success');
   btn.disabled = false;
   await loadStats();
   await loadMyNFTs();
@@ -2294,22 +2436,24 @@ async function loadCreators() {
 
     const creators = Object.entries(creatorMap);
     if (creators.length === 0) {
-      listEl.innerHTML = `<div class="empty"><span class="empty-icon">👤</span><div class="empty-title">Koi creator nahi mila</div></div>`;
+      listEl.innerHTML = `<div class="empty"><span class="empty-icon">👤</span><div class="empty-title">No creators found yet</div></div>`;
       return;
     }
 
     listEl.innerHTML = creators.map(([addr, data]) => {
-      const short = addr.slice(0,6) + '…' + addr.slice(-4);
-      const emoji = ['🎨','🖼️','🎭','🌟','💎','🔮'][parseInt(addr.slice(2,4),16) % 6];
+      const displayName = getDisplayName(addr);
+      const avatarContent = getDisplayAvatar(addr);
+      const profile = getCreatorProfile(addr);
       return `
 <div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;" 
      onmouseover="this.style.borderColor='var(--arc)'" onmouseout="this.style.borderColor='var(--border)'"
      onclick="openCreatorProfileFull('${addr}')">
   <div style="display:flex;align-items:center;gap:14px;">
-    <div class="creator-avatar">${emoji}</div>
+    <div class="creator-avatar">${avatarContent}</div>
     <div>
-      <div style="font-family:var(--font-display);font-size:16px;">${short}</div>
-      <div style="font-size:12px;color:var(--ink3);font-family:monospace;">${addr}</div>
+      <div style="font-family:var(--font-display);font-size:16px;">${escHtml(displayName)}${profile?.username ? '<span class="profile-badge">✨</span>' : ''}</div>
+      <div style="font-size:12px;color:var(--ink3);font-family:monospace;">${addr.slice(0,6)}…${addr.slice(-4)}</div>
+      ${profile?.bio ? `<div style="font-size:12px;color:var(--ink3);margin-top:2px;max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escHtml(profile.bio)}</div>` : ''}
     </div>
   </div>
   <div style="display:flex;gap:20px;">
@@ -2339,11 +2483,20 @@ async function openCreatorProfileFull(addr) {
   listEl.style.display = 'none';
   detailEl.style.display = 'block';
 
-  const short = addr.slice(0,6) + '…' + addr.slice(-4);
-  const emoji = ['🎨','🖼️','🎭','🌟','💎','🔮'][parseInt(addr.slice(2,4),16) % 6];
-  document.getElementById('detailAvatar').textContent = emoji;
-  document.getElementById('detailName').textContent   = short;
-  document.getElementById('detailAddr').textContent   = addr;
+  const profile = getCreatorProfile(addr);
+  const displayName = profile?.username || (addr.slice(0,6) + '…' + addr.slice(-4));
+  const avatarContent = getDisplayAvatar(addr);
+
+  document.getElementById('detailAvatar').innerHTML = avatarContent;
+  document.getElementById('detailName').innerHTML = escHtml(displayName) + (profile?.username ? '<span class="profile-badge">✨ Creator</span>' : '');
+  document.getElementById('detailAddr').textContent = addr;
+
+  // Show bio and twitter if available
+  let extraInfo = '';
+  if (profile?.bio) extraInfo += `<div style="font-size:13px;color:var(--ink3);margin-top:6px;">${escHtml(profile.bio)}</div>`;
+  if (profile?.twitter) extraInfo += `<div style="font-size:13px;margin-top:4px;"><a href="https://twitter.com/${escHtml(profile.twitter.replace('@',''))}" target="_blank" style="color:var(--usdc);text-decoration:none;">𝕏 ${escHtml(profile.twitter)}</a></div>`;
+  const extraEl = document.getElementById('detailExtraInfo');
+  if (extraEl) extraEl.innerHTML = extraInfo;
 
   const data = window._creatorMap?.[addr];
   if (data) {
@@ -2409,7 +2562,7 @@ async function openPriceHistory(tokenId) {
     const history = _priceHistoryCache[tokenId];
 
     if (history.length === 0) {
-      content.innerHTML = `<div class="no-history">📭 Is NFT ki koi bhi sale history nahi hai abhi tak.</div>`;
+      content.innerHTML = `<div class="no-history">📭 No sales history for this NFT yet.</div>`;
       return;
     }
 
@@ -2509,7 +2662,7 @@ function renderOfferList(tokenId) {
   const listEl = document.getElementById('offerList');
   const offers = getOffers(tokenId);
   if (offers.length === 0) {
-    listEl.innerHTML = `<div style="font-size:13px;color:var(--ink3);text-align:center;padding:12px;">Abhi tak koi offer nahi</div>`;
+    listEl.innerHTML = `<div style="font-size:13px;color:var(--ink3);text-align:center;padding:12px;">No offers yet</div>`;
     return;
   }
   listEl.innerHTML = offers.map((o, i) => {
@@ -2542,7 +2695,7 @@ function submitOffer() {
   const price = parseFloat(document.getElementById('offerPrice').value);
   const message = document.getElementById('offerMessage').value.trim();
 
-  if (!price || price <= 0) { toast('Valid price dalo', 'error'); return; }
+  if (!price || price <= 0) { toast('Enter a valid offer price', 'error'); return; }
 
   const offers = getOffers(tokenId);
   offers.unshift({
@@ -2556,7 +2709,7 @@ function submitOffer() {
   renderOfferList(tokenId);
   document.getElementById('offerPrice').value = '';
   document.getElementById('offerMessage').value = '';
-  toast(`✅ Offer of ${price.toFixed(2)} USDC submit ho gaya!`, 'success');
+  toast(`✅ Offer of ${price.toFixed(2)} USDC submitted!`, 'success');
 }
 
 function respondOffer(tokenId, index, status) {
@@ -2565,7 +2718,7 @@ function respondOffer(tokenId, index, status) {
     offers[index].status = status;
     saveOffers(tokenId, offers);
     renderOfferList(tokenId);
-    toast(status === 'accepted' ? '✅ Offer accept kar liya!' : '❌ Offer reject kar diya.', status === 'accepted' ? 'success' : '');
+    toast(status === 'accepted' ? '✅ Offer accepted!' : '❌ Offer rejected.', status === 'accepted' ? 'success' : '');
   }
 }
 
@@ -2574,7 +2727,7 @@ function cancelOffer(tokenId, index) {
   offers.splice(index, 1);
   saveOffers(tokenId, offers);
   renderOfferList(tokenId);
-  toast('Offer cancel ho gaya.', '');
+  toast('Offer cancelled.', '');
 }
 
 
@@ -2776,6 +2929,163 @@ document.addEventListener('keydown', (e) => {
     _adminSeq = '';
   }
 });
+
+// ══════════════════════════════════════════════
+//  👤 CREATOR PROFILE SETUP
+// ══════════════════════════════════════════════
+
+let _selectedProfilePic = '';  // final image URL chosen
+let _picMode = 'nft';          // 'nft' or 'url'
+
+function getProfileKey(addr) { return `arcnft_profile_${addr}`; }
+
+function getCreatorProfile(addr) {
+  try { return JSON.parse(localStorage.getItem(getProfileKey(addr)) || 'null'); } catch { return null; }
+}
+
+function saveCreatorProfile() {
+  if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
+
+  const username = document.getElementById('profileUsernameInput').value.trim();
+  const bio      = document.getElementById('profileBioInput').value.trim();
+  const twitter  = document.getElementById('profileTwitterInput').value.trim();
+  const pic      = _selectedProfilePic;
+
+  if (!username) { toast('Please enter a username', 'error'); return; }
+  if (username.includes(' ')) { toast('Username cannot contain spaces', 'error'); return; }
+
+  const profile = { username, bio, twitter, pic, address: walletAddress, updatedAt: Date.now() };
+  localStorage.setItem(getProfileKey(walletAddress), JSON.stringify(profile));
+  toast('✅ Profile saved successfully!', 'success');
+
+  // Update preview
+  updateProfilePreview(profile);
+}
+
+function loadMyProfile() {
+  if (!walletAddress) {
+    document.getElementById('profileNotConnected').style.display = 'block';
+    document.getElementById('profileSetupArea').style.display   = 'none';
+    return;
+  }
+  document.getElementById('profileNotConnected').style.display = 'none';
+  document.getElementById('profileSetupArea').style.display   = 'block';
+  document.getElementById('profileAddrPreview').textContent   = walletAddress.slice(0,6) + '…' + walletAddress.slice(-4);
+
+  // Load saved profile
+  const saved = getCreatorProfile(walletAddress);
+  if (saved) {
+    document.getElementById('profileUsernameInput').value = saved.username || '';
+    document.getElementById('profileBioInput').value      = saved.bio      || '';
+    document.getElementById('profileTwitterInput').value  = saved.twitter  || '';
+    document.getElementById('profileUsernamePreview').textContent = saved.username || 'Your Username';
+    if (saved.pic) {
+      _selectedProfilePic = saved.pic;
+      setAvatarPreview(saved.pic);
+    }
+  }
+
+  // Load NFT gallery
+  loadNFTGalleryForProfile();
+}
+
+async function loadNFTGalleryForProfile() {
+  const gallery = document.getElementById('profileNFTGallery');
+  if (!marketContract || !walletAddress) {
+    gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--ink3);padding:20px;font-size:13px;">Connect wallet to load your NFTs.</div>';
+    return;
+  }
+  gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--ink3);padding:20px;"><span class="spinner"></span> Loading NFTs…</div>';
+
+  try {
+    const total = Number(await marketContract.totalMinted());
+    const myItems = [];
+    for (let i = 1; i <= total; i++) {
+      try {
+        const owner = await marketContract.ownerOf(i);
+        if (owner.toLowerCase() === walletAddress.toLowerCase()) {
+          const uri  = await marketContract.tokenURI(i);
+          const meta = await fetchMetadata(i, uri);
+          myItems.push({ tokenId: i, meta });
+        }
+      } catch {}
+    }
+
+    if (myItems.length === 0) {
+      gallery.innerHTML = '<div style="grid-column:1/-1;text-align:center;color:var(--ink3);padding:20px;font-size:13px;">You don\'t own any NFTs yet. Mint one first!</div>';
+      return;
+    }
+
+    gallery.innerHTML = myItems.map(({ tokenId, meta }) => {
+      const img = meta.image || '';
+      const isSelected = _selectedProfilePic && _selectedProfilePic === img;
+      return `
+<div class="gallery-nft-item ${isSelected ? 'selected' : ''}"
+     title="${escHtml(meta.name || 'NFT #' + tokenId)}"
+     onclick="selectNFTasPic('${escHtml(img)}', this)">
+  ${img ? `<img src="${escHtml(img)}" alt="${escHtml(meta.name || '')}" onerror="this.parentNode.textContent='🖼️'">` : '🖼️'}
+</div>`;
+    }).join('');
+  } catch(e) {
+    gallery.innerHTML = `<div style="grid-column:1/-1;text-align:center;color:var(--danger);padding:20px;font-size:13px;">Failed to load NFTs: ${e.message}</div>`;
+  }
+}
+
+function selectNFTasPic(imgUrl, el) {
+  _selectedProfilePic = imgUrl;
+  // Highlight selected
+  document.querySelectorAll('.gallery-nft-item').forEach(i => i.classList.remove('selected'));
+  el.classList.add('selected');
+  setAvatarPreview(imgUrl);
+}
+
+function setAvatarPreview(imgUrl) {
+  const av = document.getElementById('profileAvatarPreview');
+  if (imgUrl) {
+    av.innerHTML = `<img src="${escHtml(imgUrl)}" onerror="this.parentNode.textContent='👤'">`;
+  } else {
+    av.textContent = '👤';
+  }
+}
+
+function switchPicOption(mode) {
+  _picMode = mode;
+  document.getElementById('picOptNFT').classList.toggle('active', mode === 'nft');
+  document.getElementById('picOptURL').classList.toggle('active', mode === 'url');
+  document.getElementById('nftGalleryPicker').style.display  = mode === 'nft'  ? 'block' : 'none';
+  document.getElementById('customURLPicker').style.display   = mode === 'url'  ? 'block' : 'none';
+  if (mode === 'nft') loadNFTGalleryForProfile();
+  else {
+    // Reset gallery selection
+    _selectedProfilePic = '';
+    setAvatarPreview('');
+  }
+}
+
+function updateProfilePicFromURL(url) {
+  _selectedProfilePic = url;
+  setAvatarPreview(url);
+}
+
+function updateProfilePreview(profile) {
+  document.getElementById('profileUsernamePreview').textContent = profile.username || 'Your Username';
+  if (profile.pic) setAvatarPreview(profile.pic);
+}
+
+// ── Helper: get display name for a wallet (username or short addr) ──
+function getDisplayName(addr) {
+  const profile = getCreatorProfile(addr);
+  return profile?.username || (addr.slice(0,6) + '…' + addr.slice(-4));
+}
+
+// ── Helper: get avatar for a wallet ──
+function getDisplayAvatar(addr) {
+  const profile = getCreatorProfile(addr);
+  if (profile?.pic) return `<img src="${escHtml(profile.pic)}" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" onerror="this.style.display='none'">`;
+  const emoji = ['🎨','🖼️','🎭','🌟','💎','🔮'][parseInt(addr.slice(2,4),16) % 6];
+  return emoji;
+}
+
 
 // Load banner on page start
 window.addEventListener('load', () => {
