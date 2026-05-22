@@ -150,8 +150,12 @@ header{
   background:var(--white);
   border-bottom:1px solid var(--border);
   position:sticky;top:67px;z-index:90;
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  scrollbar-width:none;
 }
-.tabs-inner{display:flex;gap:0;}
+.tabs-bar::-webkit-scrollbar{display:none;}
+.tabs-inner{display:flex;gap:0;min-width:max-content;}
 .tab-btn{
   padding:14px 22px;
   font-size:14px;font-weight:500;color:var(--ink3);
@@ -482,6 +486,68 @@ code{
   .admin-grid{grid-template-columns:1fr !important;}
   .bulk-layout{grid-template-columns:1fr !important;}
   .search-bar{flex-direction:column;align-items:stretch;}
+  .header-right .net-pill{display:none;}
+}
+
+/* ── SKELETON LOADER ── */
+.skeleton{
+  background:linear-gradient(90deg,var(--off) 25%,var(--border) 50%,var(--off) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:6px;
+}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.skeleton-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);overflow:hidden;
+}
+.skeleton-img{width:100%;aspect-ratio:1;background:var(--off);}
+.skeleton-img .skeleton{width:100%;height:100%;}
+.skeleton-body{padding:16px;display:flex;flex-direction:column;gap:10px;}
+.skeleton-line{height:14px;}
+.skeleton-line.short{width:60%;}
+.skeleton-line.xshort{width:40%;}
+
+/* ── ONCHAIN OFFER BADGE ── */
+.offer-onchain-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  background:linear-gradient(135deg,var(--arc-light),var(--usdc-light));
+  color:var(--arc);border:1px solid rgba(26,107,94,.2);
+  font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:2px 8px;border-radius:4px;
+}
+
+/* ── INBOX TAB BADGE ── */
+.tab-badge{
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--danger);color:#fff;
+  font-size:9px;font-weight:700;
+  width:16px;height:16px;border-radius:50%;
+  margin-left:4px;vertical-align:middle;
+}
+
+/* ── OFFER INBOX ── */
+.inbox-offer-card{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:18px 20px;
+  box-shadow:var(--shadow);margin-bottom:12px;
+  display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+}
+.inbox-offer-card.unread{border-left:3px solid var(--arc);}
+.inbox-nft-thumb{
+  width:52px;height:52px;border-radius:8px;overflow:hidden;
+  background:var(--off);display:flex;align-items:center;justify-content:center;
+  font-size:24px;flex-shrink:0;border:1px solid var(--border);
+}
+.inbox-nft-thumb img{width:100%;height:100%;object-fit:cover;}
+
+/* ── STAT SKELETON ── */
+.stat-val.loading{
+  display:inline-block;width:60px;height:28px;
+  background:linear-gradient(90deg,var(--border) 25%,var(--border2) 50%,var(--border) 75%);
+  background-size:200% 100%;
+  animation:shimmer 1.4s infinite;
+  border-radius:6px;vertical-align:middle;
 }
 
 /* ── PANEL TABS — CRITICAL ── */
@@ -734,15 +800,15 @@ code{
         </div>
         <div class="hero-stats">
           <div class="stat">
-            <span class="stat-val" id="statMinted">—</span>
+            <span class="stat-val loading" id="statMinted"></span>
             <span class="stat-lbl">Minted</span>
           </div>
           <div class="stat">
-            <span class="stat-val" id="statSales">—</span>
+            <span class="stat-val loading" id="statSales"></span>
             <span class="stat-lbl">Sales</span>
           </div>
           <div class="stat">
-            <span class="stat-val" id="statVol">—</span>
+            <span class="stat-val loading" id="statVol"></span>
             <span class="stat-lbl">USDC Vol.</span>
           </div>
         </div>
@@ -758,6 +824,7 @@ code{
     <button class="tab-btn" onclick="switchTab('mint')">Mint NFT</button>
     <button class="tab-btn" onclick="switchTab('bulkmint')">Bulk Mint</button>
     <button class="tab-btn" onclick="switchTab('mynfts')">My NFTs</button>
+    <button class="tab-btn" onclick="switchTab('inbox')" id="inboxTabBtn">📬 Offers<span id="inboxBadge" class="tab-badge" style="display:none">0</span></button>
     <button class="tab-btn" onclick="switchTab('myprofile')">My Profile</button>
     <button class="tab-btn" onclick="switchTab('creators')">Creators</button>
     <button class="tab-btn" id="adminTabBtn" onclick="switchTab('admin')" style="display:none">⚙️ Admin</button>
@@ -1147,7 +1214,7 @@ code{
             <table style="width:100%;font-size:13px;border-collapse:collapse;">
               <tr style="border-bottom:1px solid var(--border)">
                 <td style="padding:9px 0;color:var(--ink3);width:130px">Contract</td>
-                <td style="padding:9px 0;font-family:monospace;font-size:11px;word-break:break-all">0xEE3733049Ec0c9ca105BC7F88CC39b2253Bfa1E6</td>
+                <td style="padding:9px 0;font-family:monospace;font-size:11px;word-break:break-all">0xa461194f73f8D008e028D67fD6684e9B14fA9724</td>
               </tr>
               <tr style="border-bottom:1px solid var(--border)">
                 <td style="padding:9px 0;color:var(--ink3)">Network</td>
@@ -1163,7 +1230,7 @@ code{
               </tr>
             </table>
             <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;">
-              <a href="https://testnet.arcscan.app/address/0xEE3733049Ec0c9ca105BC7F88CC39b2253Bfa1E6" target="_blank" class="btn btn-secondary btn-sm">View on ArcScan ↗</a>
+              <a href="https://testnet.arcscan.app/address/0xa461194f73f8D008e028D67fD6684e9B14fA9724" target="_blank" class="btn btn-secondary btn-sm">View on ArcScan ↗</a>
               <button class="btn btn-secondary btn-sm" onclick="adminRefreshStats()">↺ Refresh Stats</button>
             </div>
           </div>
@@ -1305,17 +1372,55 @@ code{
               <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--arc);margin-bottom:8px;">📋 Quick Deploy Guide</div>
               <div style="font-size:12px;color:var(--ink2);line-height:1.8;">
                 1. Open <a href="https://remix.ethereum.org" target="_blank" class="ext-link">Remix IDE ↗</a><br/>
-                2. Upload <code>ArcNFTMarketplace.sol</code> (download from Admin Setup tab)<br/>
+                2. Upload <code>ArcNFTMarketplace.sol</code> (download below ↓)<br/>
                 3. Compile with <strong>Solidity 0.8.20</strong><br/>
                 4. Deploy with MetaMask on <strong>Arc Testnet (5042002)</strong><br/>
                 5. Constructor arg: <code onclick="copyText('0x3600000000000000000000000000000000000000')" style="cursor:pointer;" title="Click to copy">0x3600…0000</code> (USDC)<br/>
-                6. Copy deployed address → paste above → Apply
+                6. Copy deployed address → paste above → Apply</div>
+            <div style="margin-top:12px;">
+              <button class="btn btn-secondary btn-sm btn-full" onclick="downloadSolidity()">⬇️ Download ArcNFTMarketplace.sol (with Onchain Offers)</button>
+            </div>
               </div>
             </div>
           </div>
 
         </div><!-- /admin-grid -->
       </div><!-- /adminDashboard -->
+    </div>
+  </div>
+
+  <!-- ══════════════════════ OFFERS INBOX TAB ══════════════════════ -->
+  <div id="tab-inbox" class="panel">
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">📬 Offers Inbox</h2>
+        <button class="btn btn-secondary btn-sm" onclick="loadOffersInbox()">↺ Refresh</button>
+      </div>
+
+      <!-- Wallet not connected -->
+      <div id="inboxNotConnected" style="display:none">
+        <div class="empty">
+          <span class="empty-icon">🔌</span>
+          <div class="empty-title">Connect wallet first</div>
+          <p>Connect MetaMask to see offers on your NFTs.</p>
+          <button class="btn btn-primary" style="margin-top:16px" onclick="connectWallet()">Connect Wallet</button>
+        </div>
+      </div>
+
+      <!-- Tabs: Received / Sent -->
+      <div id="inboxContent" style="display:none">
+        <div style="display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:24px;">
+          <button class="tab-btn active" id="inboxReceivedBtn" onclick="switchInboxTab('received')" style="font-size:13px;padding:10px 18px;">
+            📥 Received <span id="receivedCount" class="tab-badge" style="display:none;background:var(--arc);">0</span>
+          </button>
+          <button class="tab-btn" id="inboxSentBtn" onclick="switchInboxTab('sent')" style="font-size:13px;padding:10px 18px;">
+            📤 Sent
+          </button>
+        </div>
+
+        <div id="inboxReceivedList"></div>
+        <div id="inboxSentList" style="display:none"></div>
+      </div>
     </div>
   </div>
 
@@ -1463,6 +1568,14 @@ const MARKET_ABI = [
   "function delistNFT(uint256 tokenId)",
   // Buy
   "function buyNFT(uint256 tokenId)",
+  // Offers — onchain
+  "function makeOffer(uint256 tokenId, uint256 amount) payable",
+  "function cancelOffer(uint256 tokenId)",
+  "function acceptOffer(uint256 tokenId, address offerer)",
+  "function rejectOffer(uint256 tokenId, address offerer)",
+  "function getOffer(uint256 tokenId, address offerer) view returns (uint256 amount, uint8 status, uint256 timestamp)",
+  "function getOffersByToken(uint256 tokenId) view returns (address[] offerers, uint256[] amounts, uint8[] statuses, uint256[] timestamps)",
+  "function getOffersByOfferer(address offerer) view returns (uint256[] tokenIds, uint256[] amounts, uint8[] statuses, uint256[] timestamps)",
   // Views
   "function getListing(uint256 tokenId) view returns (address seller, uint256 price, bool active)",
   "function getActiveListings() view returns (uint256[])",
@@ -1475,7 +1588,11 @@ const MARKET_ABI = [
   // Events
   "event NFTMinted(uint256 indexed tokenId, address indexed creator, string tokenURI, uint96 royaltyBps)",
   "event Listed(uint256 indexed tokenId, address indexed seller, uint256 price)",
-  "event Sold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price)"
+  "event Sold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price)",
+  "event OfferMade(uint256 indexed tokenId, address indexed offerer, uint256 amount)",
+  "event OfferAccepted(uint256 indexed tokenId, address indexed offerer, uint256 amount)",
+  "event OfferRejected(uint256 indexed tokenId, address indexed offerer)",
+  "event OfferCancelled(uint256 indexed tokenId, address indexed offerer)"
 ];
 
 const USDC_ABI = [
@@ -1488,7 +1605,7 @@ const USDC_ABI = [
 // ── STATE ───────────────────────────────────
 let provider, signer, walletAddress;
 let marketContract, usdcContract;
-let CONTRACT_ADDRESS = '0xEE3733049Ec0c9ca105BC7F88CC39b2253Bfa1E6';
+let CONTRACT_ADDRESS = '0xa461194f73f8D008e028D67fD6684e9B14fA9724';
 let pendingBuyTokenId = null;
 let pendingListTokenId = null;
 let nftMetadataCache = {};
@@ -1568,6 +1685,8 @@ async function onWalletConnected() {
     marketContract = new ethers.Contract(CONTRACT_ADDRESS, MARKET_ABI, signer);
     await loadMarketplace();
     await loadStats();
+    // Refresh offers inbox badge
+    refreshInboxBadge();
     toast('Wallet connected!', 'success');
   } else {
     toast('Wallet connected! Go to Admin tab to manage your marketplace.', 'success');
@@ -1651,10 +1770,21 @@ async function loadStats() {
   if (!marketContract) return;
   try {
     const [m, s, v] = await marketContract.getStats();
-    document.getElementById('statMinted').textContent = m.toString();
-    document.getElementById('statSales').textContent  = s.toString();
-    document.getElementById('statVol').textContent    = (Number(v) / 1e6).toFixed(0) + ' USDC';
-  } catch {}
+    const setStatVal = (id, val) => {
+      const el = document.getElementById(id);
+      el.classList.remove('loading');
+      el.textContent = val;
+    };
+    setStatVal('statMinted', m.toString());
+    setStatVal('statSales', s.toString());
+    setStatVal('statVol', (Number(v) / 1e6).toFixed(0) + ' USDC');
+  } catch {
+    ['statMinted','statSales','statVol'].forEach(id => {
+      const el = document.getElementById(id);
+      el.classList.remove('loading');
+      el.textContent = '—';
+    });
+  }
 }
 
 // ── MARKETPLACE ──────────────────────────────
@@ -2017,7 +2147,7 @@ function switchTab(tab) {
   }
 
   // Highlight selected tab button
-  const tabOrder = ['marketplace','mint','bulkmint','mynfts','myprofile','creators','admin'];
+  const tabOrder = ['marketplace','mint','bulkmint','mynfts','inbox','myprofile','creators','admin'];
   const idx = tabOrder.indexOf(tab);
   const btns = document.querySelectorAll('.tab-btn');
   if (btns[idx]) btns[idx].classList.add('active');
@@ -2028,6 +2158,7 @@ function switchTab(tab) {
   if (tab === 'creators' && marketContract) loadCreators();
   if (tab === 'myprofile') loadMyProfile();
   if (tab === 'bulkmint') initBulkMint();
+  if (tab === 'inbox') loadOffersInbox();
   if (tab === 'admin' && isAdmin && marketContract) loadAdminData();
 }
 
@@ -2112,15 +2243,13 @@ fixMintLayout();
 //  SECURITY LAYER
 // ══════════════════════════════════════════════
 
-// SHA-256 hash of your password (never store plaintext)
-// Current password: arcnft2024  -> hash below
-// To change: run  crypto.subtle.digest('SHA-256', new TextEncoder().encode('yourpassword'))
-//            then convert ArrayBuffer to hex string
-const ADMIN_PASS_HASH = 'b3d6f2c8a1e4d9b5f7c2a8e1d4b9f6c3a2e7d1b8f4c6a9e2d5b3f1c8a4e7d9b2'; // placeholder replaced at runtime
-
-// We store the real hash derived from the literal password once on first load
-// This way the password is never visible in plain text after obfuscation
-const _RAW = 'arcnft2024'; // <-- CHANGE THIS to your desired password
+// SHA-256 hash of admin password (never store plaintext)
+// Current password: arcnft2024
+// To change password: open browser console, run:
+//   crypto.subtle.digest('SHA-256', new TextEncoder().encode('YourNewPassword'))
+//     .then(b => console.log(Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('')))
+// Then replace ADMIN_PASS_HASH below with the output.
+const ADMIN_PASS_HASH = 'e702c2e322d74a80d8ac073382389e14232c662f5330aff298cc708919d6cb29'; // password: arcnft2024
 
 async function _hashPass(str) {
   const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
@@ -2145,10 +2274,9 @@ async function adminLogin() {
   const pass = document.getElementById('adminPassInput').value;
   if (!pass) return;
 
-  const inputHash  = await _hashPass(pass);
-  const correctHash = await _hashPass(_RAW);
+  const inputHash   = await _hashPass(pass);
 
-  if (inputHash === correctHash) {
+  if (inputHash === ADMIN_PASS_HASH) {
     _loginAttempts = 0;
     isAdmin = true;
     document.getElementById('adminLoginCard').style.display = 'none';
@@ -2225,7 +2353,7 @@ async function loadAdminListings() {
           <div style="font-size:11px;color:var(--ink3);font-family:monospace">${seller.slice(0,6)}…${seller.slice(-4)}</div>
         </div>
         <div style="font-weight:600;color:var(--usdc)">${priceUSDC} USDC</div>
-        <a href="https://testnet.arcscan.app/token/0xEE3733049Ec0c9ca105BC7F88CC39b2253Bfa1E6/instance/${id}" target="_blank" style="font-size:11px;color:var(--usdc)">↗</a>
+        <a href="https://testnet.arcscan.app/token/0xa461194f73f8D008e028D67fD6684e9B14fA9724/instance/${id}" target="_blank" style="font-size:11px;color:var(--usdc)">↗</a>
       </div>`;
     }
     box.innerHTML = rows;
@@ -2253,7 +2381,18 @@ async function loadMarketplace() {
     grid.innerHTML = `<div class="empty"><span class="empty-icon">🏗️</span><div class="empty-title">Contract not configured</div><p>Check Admin tab.</p></div>`;
     return;
   }
-  grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--ink3)"><span class="spinner"></span><br/>Loading from Arc Testnet…</div>`;
+  grid.innerHTML = Array(6).fill(0).map(() => `
+    <div class="skeleton-card">
+      <div class="skeleton-img"><div class="skeleton" style="width:100%;height:100%;"></div></div>
+      <div class="skeleton-body">
+        <div class="skeleton skeleton-line"></div>
+        <div class="skeleton skeleton-line short"></div>
+        <div style="display:flex;justify-content:space-between;margin-top:8px;">
+          <div class="skeleton skeleton-line xshort" style="height:20px;width:45%"></div>
+          <div class="skeleton skeleton-line xshort" style="height:20px;width:30%"></div>
+        </div>
+      </div>
+    </div>`).join('');
   try {
     const ids = await marketContract.getActiveListings();
     if (ids.length === 0) {
@@ -2789,21 +2928,20 @@ function closePriceHistoryModal() {
 }
 
 // ══════════════════════════════════════════════
-//  💬 OFFER SYSTEM (localStorage-based)
+//  💬 OFFER SYSTEM — ONCHAIN (USDC-based)
+//  Offers are stored on the blockchain via the
+//  ArcNFTMarketplace contract. Buyers lock USDC,
+//  sellers can accept/reject. No localStorage.
 // ══════════════════════════════════════════════
+
+// Offer status enum matching contract
+const OFFER_STATUS = { NONE: 0, PENDING: 1, ACCEPTED: 2, REJECTED: 3, CANCELLED: 4 };
+const OFFER_LABELS  = { 0: '', 1: '⏳ Pending', 2: '✅ Accepted', 3: '❌ Rejected', 4: '🚫 Cancelled' };
+const OFFER_CLASSES = { 0: '', 1: 'offer-pending', 2: 'offer-accepted', 3: 'offer-rejected', 4: 'offer-rejected' };
 
 let pendingOfferTokenId = null;
 
-function getOffersKey(tokenId) { return `arcnft_offers_${CONTRACT_ADDRESS}_${tokenId}`; }
-
-function getOffers(tokenId) {
-  try { return JSON.parse(localStorage.getItem(getOffersKey(tokenId)) || '[]'); } catch { return []; }
-}
-
-function saveOffers(tokenId, offers) {
-  localStorage.setItem(getOffersKey(tokenId), JSON.stringify(offers));
-}
-
+// ── Open the "Make an Offer" modal ──
 async function openOfferModal(tokenId) {
   if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
   pendingOfferTokenId = tokenId;
@@ -2821,7 +2959,7 @@ async function openOfferModal(tokenId) {
 
   document.getElementById('offerPrice').value = '';
   document.getElementById('offerMessage').value = '';
-  renderOfferList(tokenId);
+  await renderOfferList(tokenId);
   document.getElementById('offerModal').classList.add('open');
 }
 
@@ -2830,76 +2968,332 @@ function closeOfferModal() {
   pendingOfferTokenId = null;
 }
 
-function renderOfferList(tokenId) {
+// ── Render existing onchain offers in the modal ──
+async function renderOfferList(tokenId) {
   const listEl = document.getElementById('offerList');
-  const offers = getOffers(tokenId);
-  if (offers.length === 0) {
-    listEl.innerHTML = `<div style="font-size:13px;color:var(--ink3);text-align:center;padding:12px;">No offers yet</div>`;
-    return;
-  }
-  listEl.innerHTML = offers.map((o, i) => {
-    const isMyOffer = o.from?.toLowerCase() === walletAddress?.toLowerCase();
-    const statusBadge = `<span class="offer-badge offer-${o.status}">${o.status === 'pending' ? '⏳ Pending' : o.status === 'accepted' ? '✅ Accepted' : '❌ Rejected'}</span>`;
-    return `
+  listEl.innerHTML = `<div style="text-align:center;padding:12px;color:var(--ink3);"><span class="spinner"></span> Loading offers…</div>`;
+
+  try {
+    // Try onchain fetch first
+    const hasOfferFn = MARKET_ABI.some(x => x.includes('getOffersByToken'));
+    if (hasOfferFn && marketContract.getOffersByToken) {
+      const [offerers, amounts, statuses, timestamps] = await marketContract.getOffersByToken(tokenId);
+      if (offerers.length === 0) {
+        listEl.innerHTML = `<div style="font-size:13px;color:var(--ink3);text-align:center;padding:12px;">No onchain offers yet</div>`;
+        return;
+      }
+      const owner = await marketContract.ownerOf(tokenId);
+      const isOwner = walletAddress && owner.toLowerCase() === walletAddress.toLowerCase();
+
+      listEl.innerHTML = offerers.map((addr, i) => {
+        const amtUSDC = (Number(amounts[i]) / 1e6).toFixed(2);
+        const st = Number(statuses[i]);
+        const isMyOffer = addr.toLowerCase() === walletAddress?.toLowerCase();
+        const badge = `<span class="offer-badge ${OFFER_CLASSES[st]}">${OFFER_LABELS[st]}</span>`;
+        return `
 <div class="offer-item">
   <div>
-    <div class="offer-amt">${o.price} USDC</div>
-    <div class="offer-from">${o.from?.slice(0,6)}…${o.from?.slice(-4)}</div>
-    ${o.message ? `<div style="font-size:12px;color:var(--ink3);margin-top:2px;">"${escHtml(o.message)}"</div>` : ''}
+    <div class="offer-amt">${amtUSDC} USDC <span class="offer-onchain-badge">⛓ Onchain</span></div>
+    <div class="offer-from">${addr.slice(0,6)}…${addr.slice(-4)}</div>
   </div>
   <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
-    ${statusBadge}
+    ${badge}
     <div class="offer-actions">
-      ${!isMyOffer && o.status === 'pending' ? `
-        <button class="btn btn-arc btn-sm" onclick="respondOffer(${tokenId},${i},'accepted')">Accept</button>
-        <button class="btn btn-danger btn-sm" onclick="respondOffer(${tokenId},${i},'rejected')">Reject</button>
+      ${isOwner && st === 1 ? `
+        <button class="btn btn-arc btn-sm" onclick="acceptOfferOnchain(${tokenId},'${addr}')">Accept</button>
+        <button class="btn btn-danger btn-sm" onclick="rejectOfferOnchain(${tokenId},'${addr}')">Reject</button>
       ` : ''}
-      ${isMyOffer && o.status === 'pending' ? `<button class="btn btn-secondary btn-sm" onclick="cancelOffer(${tokenId},${i})">Cancel</button>` : ''}
+      ${isMyOffer && st === 1 ? `<button class="btn btn-secondary btn-sm" onclick="cancelOfferOnchain(${tokenId})">Cancel</button>` : ''}
     </div>
   </div>
 </div>`;
-  }).join('');
-}
-
-function submitOffer() {
-  const tokenId = pendingOfferTokenId;
-  if (!tokenId) return;
-  const price = parseFloat(document.getElementById('offerPrice').value);
-  const message = document.getElementById('offerMessage').value.trim();
-
-  if (!price || price <= 0) { toast('Enter a valid offer price', 'error'); return; }
-
-  const offers = getOffers(tokenId);
-  offers.unshift({
-    from: walletAddress,
-    price: price.toFixed(2),
-    message,
-    status: 'pending',
-    timestamp: Date.now()
-  });
-  saveOffers(tokenId, offers);
-  renderOfferList(tokenId);
-  document.getElementById('offerPrice').value = '';
-  document.getElementById('offerMessage').value = '';
-  toast(`✅ Offer of ${price.toFixed(2)} USDC submitted!`, 'success');
-}
-
-function respondOffer(tokenId, index, status) {
-  const offers = getOffers(tokenId);
-  if (offers[index]) {
-    offers[index].status = status;
-    saveOffers(tokenId, offers);
-    renderOfferList(tokenId);
-    toast(status === 'accepted' ? '✅ Offer accepted!' : '❌ Offer rejected.', status === 'accepted' ? 'success' : '');
+      }).join('');
+    } else {
+      // Contract doesn't have offer functions yet — show info
+      listEl.innerHTML = `<div class="info-bar">ℹ️ Onchain offer functions not found in this contract. Deploy updated ArcNFTMarketplace.sol from the Admin tab.</div>`;
+    }
+  } catch(e) {
+    listEl.innerHTML = `<div style="font-size:13px;color:var(--danger);text-align:center;padding:12px;">Failed to load: ${escHtml(e.message)}</div>`;
   }
 }
 
-function cancelOffer(tokenId, index) {
-  const offers = getOffers(tokenId);
-  offers.splice(index, 1);
-  saveOffers(tokenId, offers);
-  renderOfferList(tokenId);
-  toast('Offer cancelled.', '');
+// ── Submit Offer Onchain ──
+async function submitOffer() {
+  const tokenId = pendingOfferTokenId;
+  if (!tokenId) return;
+  if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
+
+  const price   = parseFloat(document.getElementById('offerPrice').value);
+  if (!price || price <= 0) { toast('Enter a valid offer price', 'error'); return; }
+  if (price > 100000) { toast('Offer too high (max 100,000 USDC)', 'error'); return; }
+  if (!rateLimitCheck('offer', 3000)) return;
+
+  const priceWei = BigInt(Math.round(price * 1e6));
+  const btn = document.querySelector('#offerModal .btn-arc');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Submitting…'; }
+
+  try {
+    // Check if contract has makeOffer
+    if (!marketContract.makeOffer) {
+      toast('Onchain offers require updated contract. See Admin tab.', 'error');
+      if (btn) { btn.disabled = false; btn.textContent = 'Submit Offer'; }
+      return;
+    }
+
+    // Step 1: Approve USDC for contract (offer amount locked in contract)
+    const allowance = await usdcContract.allowance(walletAddress, CONTRACT_ADDRESS);
+    if (allowance < priceWei) {
+      toast('Approving USDC for offer…');
+      const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, priceWei);
+      await approveTx.wait();
+    }
+
+    // Step 2: Call makeOffer onchain
+    const tx = await marketContract.makeOffer(tokenId, priceWei);
+    toast(`Submitting offer… <a href="${ARC_EXPLORER}/tx/${tx.hash}" target="_blank">View ↗</a>`);
+    await tx.wait();
+
+    toast(`✅ Offer of ${price.toFixed(2)} USDC submitted onchain! NFT owner will be notified.`, 'success');
+    document.getElementById('offerPrice').value   = '';
+    document.getElementById('offerMessage').value = '';
+    await renderOfferList(tokenId);
+
+    // Update inbox badge
+    refreshInboxBadge();
+
+  } catch(e) {
+    toast('Offer failed: ' + (e.reason || e.message), 'error');
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Submit Offer'; }
+}
+
+// ── Accept Offer Onchain ──
+async function acceptOfferOnchain(tokenId, offererAddr) {
+  if (!walletAddress) return;
+  if (!confirm(`Accept offer from ${offererAddr.slice(0,6)}…? This will transfer the NFT and release USDC.`)) return;
+
+  try {
+    toast('Accepting offer onchain…');
+    const tx = await marketContract.acceptOffer(tokenId, offererAddr);
+    toast(`Accepting… <a href="${ARC_EXPLORER}/tx/${tx.hash}" target="_blank">View ↗</a>`);
+    await tx.wait();
+    toast('✅ Offer accepted! NFT transferred & USDC received.', 'success');
+    await renderOfferList(tokenId);
+    await refreshBalance();
+    await loadMarketplace();
+    await loadStats();
+    refreshInboxBadge();
+  } catch(e) {
+    toast('Accept failed: ' + (e.reason || e.message), 'error');
+  }
+}
+
+// ── Reject Offer Onchain ──
+async function rejectOfferOnchain(tokenId, offererAddr) {
+  if (!walletAddress) return;
+  try {
+    toast('Rejecting offer…');
+    const tx = await marketContract.rejectOffer(tokenId, offererAddr);
+    await tx.wait();
+    toast('Offer rejected. USDC returned to offerer.', 'success');
+    await renderOfferList(tokenId);
+    refreshInboxBadge();
+  } catch(e) {
+    toast('Reject failed: ' + (e.reason || e.message), 'error');
+  }
+}
+
+// ── Cancel Own Offer Onchain ──
+async function cancelOfferOnchain(tokenId) {
+  if (!walletAddress) return;
+  if (!confirm('Cancel your offer? Your USDC will be returned.')) return;
+  try {
+    toast('Cancelling offer…');
+    const tx = await marketContract.cancelOffer(tokenId);
+    await tx.wait();
+    toast('✅ Offer cancelled. USDC returned to your wallet.', 'success');
+    await renderOfferList(tokenId);
+    await refreshBalance();
+    refreshInboxBadge();
+  } catch(e) {
+    toast('Cancel failed: ' + (e.reason || e.message), 'error');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  📬 OFFERS INBOX (Onchain — Received + Sent)
+// ══════════════════════════════════════════════
+
+let _inboxTab = 'received';
+
+function switchInboxTab(tab) {
+  _inboxTab = tab;
+  document.getElementById('inboxReceivedList').style.display = tab === 'received' ? 'block' : 'none';
+  document.getElementById('inboxSentList').style.display     = tab === 'sent'     ? 'block' : 'none';
+  document.getElementById('inboxReceivedBtn').classList.toggle('active', tab === 'received');
+  document.getElementById('inboxSentBtn').classList.toggle('active', tab === 'sent');
+}
+
+async function loadOffersInbox() {
+  const notConnEl  = document.getElementById('inboxNotConnected');
+  const contentEl  = document.getElementById('inboxContent');
+  const receivedEl = document.getElementById('inboxReceivedList');
+  const sentEl     = document.getElementById('inboxSentList');
+
+  if (!walletAddress) {
+    notConnEl.style.display  = 'block';
+    contentEl.style.display  = 'none';
+    return;
+  }
+  notConnEl.style.display  = 'none';
+  contentEl.style.display  = 'block';
+
+  const loadingHTML = `<div style="text-align:center;padding:40px;color:var(--ink3)"><span class="spinner"></span><br/>Loading onchain offers…</div>`;
+  receivedEl.innerHTML = loadingHTML;
+  sentEl.innerHTML     = loadingHTML;
+
+  // ── RECEIVED OFFERS (offers on my NFTs) ──
+  try {
+    const total = Number(await marketContract.totalMinted());
+    const receivedOffers = [];
+
+    for (let i = 1; i <= total; i++) {
+      try {
+        const owner = await marketContract.ownerOf(i);
+        if (owner.toLowerCase() !== walletAddress.toLowerCase()) continue;
+
+        // I own this NFT — check offers
+        if (!marketContract.getOffersByToken) continue;
+        const [offerers, amounts, statuses, timestamps] = await marketContract.getOffersByToken(i);
+        const uri  = await marketContract.tokenURI(i);
+        const meta = await fetchMetadata(i, uri);
+
+        for (let j = 0; j < offerers.length; j++) {
+          receivedOffers.push({
+            tokenId: i, meta,
+            offerer: offerers[j],
+            amount: Number(amounts[j]) / 1e6,
+            status: Number(statuses[j]),
+            timestamp: Number(timestamps[j])
+          });
+        }
+      } catch {}
+    }
+
+    const pendingReceived = receivedOffers.filter(o => o.status === 1);
+    const badgeEl = document.getElementById('receivedCount');
+    if (pendingReceived.length > 0) {
+      badgeEl.textContent = pendingReceived.length;
+      badgeEl.style.display = 'inline-flex';
+    } else {
+      badgeEl.style.display = 'none';
+    }
+
+    if (receivedOffers.length === 0) {
+      receivedEl.innerHTML = `<div class="empty"><span class="empty-icon">📭</span><div class="empty-title">No offers received</div><p>When someone makes an offer on your NFT, it will appear here.</p></div>`;
+    } else {
+      receivedEl.innerHTML = receivedOffers
+        .sort((a,b) => b.timestamp - a.timestamp)
+        .map(o => renderInboxCard(o, 'received')).join('');
+    }
+  } catch(e) {
+    receivedEl.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span><div class="empty-title">Could not load</div><p>${escHtml(e.message)}</p><p style="margin-top:8px;font-size:12px;color:var(--ink3)">Make sure your contract has onchain offer functions.</p></div>`;
+  }
+
+  // ── SENT OFFERS (offers I've made) ──
+  try {
+    if (!marketContract.getOffersByOfferer) {
+      sentEl.innerHTML = `<div class="info-bar">ℹ️ Your sent offers require an updated contract. Deploy from Admin tab.</div>`;
+      return;
+    }
+    const [tokenIds, amounts, statuses, timestamps] = await marketContract.getOffersByOfferer(walletAddress);
+    if (tokenIds.length === 0) {
+      sentEl.innerHTML = `<div class="empty"><span class="empty-icon">📤</span><div class="empty-title">No offers sent</div><p>Make offers on listed NFTs from the Marketplace tab.</p></div>`;
+      return;
+    }
+
+    const sentOffers = await Promise.all(tokenIds.map(async (tid, i) => {
+      let meta = {};
+      try {
+        const uri = await marketContract.tokenURI(tid);
+        meta = await fetchMetadata(Number(tid), uri);
+      } catch {}
+      return {
+        tokenId: Number(tid), meta,
+        offerer: walletAddress,
+        amount: Number(amounts[i]) / 1e6,
+        status: Number(statuses[i]),
+        timestamp: Number(timestamps[i])
+      };
+    }));
+
+    sentEl.innerHTML = sentOffers
+      .sort((a,b) => b.timestamp - a.timestamp)
+      .map(o => renderInboxCard(o, 'sent')).join('');
+  } catch(e) {
+    sentEl.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span><div class="empty-title">Could not load sent offers</div><p>${escHtml(e.message)}</p></div>`;
+  }
+}
+
+function renderInboxCard(o, mode) {
+  const img = o.meta.image || '';
+  const imgHTML = img
+    ? `<img src="${escHtml(img)}" onerror="this.parentNode.textContent='🖼️'" style="width:100%;height:100%;object-fit:cover;">`
+    : '🖼️';
+  const isUnread = o.status === 1 && mode === 'received';
+  const badge = `<span class="offer-badge ${OFFER_CLASSES[o.status]}">${OFFER_LABELS[o.status]}</span>`;
+  const date  = o.timestamp ? new Date(o.timestamp * 1000).toLocaleDateString() : '';
+
+  const actions = mode === 'received' && o.status === 1 ? `
+    <div style="display:flex;gap:6px;margin-top:8px;">
+      <button class="btn btn-arc btn-sm" onclick="acceptOfferOnchain(${o.tokenId},'${o.offerer}');loadOffersInbox()">✅ Accept</button>
+      <button class="btn btn-danger btn-sm" onclick="rejectOfferOnchain(${o.tokenId},'${o.offerer}');loadOffersInbox()">❌ Reject</button>
+    </div>` : '';
+
+  const cancelBtn = mode === 'sent' && o.status === 1 ? `
+    <button class="btn btn-secondary btn-sm" style="margin-top:8px;" onclick="cancelOfferOnchain(${o.tokenId});loadOffersInbox()">🚫 Cancel Offer</button>` : '';
+
+  return `
+<div class="inbox-offer-card ${isUnread ? 'unread' : ''}">
+  <div class="inbox-nft-thumb">${imgHTML}</div>
+  <div style="flex:1;min-width:0;">
+    <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px;">
+      <span style="font-family:var(--font-display);font-size:15px;">${escHtml(o.meta.name || `NFT #${o.tokenId}`)}</span>
+      <span class="offer-onchain-badge">⛓ Onchain</span>
+    </div>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:6px;">
+      Token #${o.tokenId} · ${mode === 'received' ? 'From: ' + o.offerer.slice(0,6)+'…'+o.offerer.slice(-4) : 'To owner'} ${date ? '· ' + date : ''}
+    </div>
+    <div style="font-family:var(--font-display);font-size:20px;color:var(--arc);margin-bottom:4px;">${o.amount.toFixed(2)} USDC</div>
+    ${badge}
+    ${actions}
+    ${cancelBtn}
+  </div>
+</div>`;
+}
+
+// ── Update inbox badge in nav ──
+async function refreshInboxBadge() {
+  if (!walletAddress || !marketContract) return;
+  try {
+    const total = Number(await marketContract.totalMinted());
+    let pending = 0;
+    for (let i = 1; i <= total; i++) {
+      try {
+        const owner = await marketContract.ownerOf(i);
+        if (owner.toLowerCase() !== walletAddress.toLowerCase()) continue;
+        if (!marketContract.getOffersByToken) continue;
+        const [,, statuses] = await marketContract.getOffersByToken(i);
+        pending += statuses.filter(s => Number(s) === 1).length;
+      } catch {}
+    }
+    const badge = document.getElementById('inboxBadge');
+    if (badge) {
+      badge.textContent = pending;
+      badge.style.display = pending > 0 ? 'inline-flex' : 'none';
+    }
+  } catch {}
 }
 
 
@@ -3338,7 +3732,300 @@ function getDisplayAvatar(addr) {
 }
 
 
-// Load banner on page start
+// ── Download Updated Solidity Contract ──
+function downloadSolidity() {
+  const sol = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.24;
+
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721URIStorage.sol";
+import "@openzeppelin/contracts/token/ERC721/extensions/ERC721Royalty.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+
+/// @title ArcNFTMarketplace — with Onchain Offers
+/// @notice ERC-721 marketplace on Arc Testnet with USDC payments and onchain offer system
+contract ArcNFTMarketplace is ERC721, ERC721URIStorage, ERC721Royalty, Ownable {
+
+    IERC20 public immutable usdc;
+    uint256 public constant PLATFORM_FEE_BPS = 250; // 2.5%
+
+    uint256 private _tokenIdCounter;
+    uint256 public totalSales;
+    uint256 public totalVolume;
+
+    struct Listing {
+        address seller;
+        uint256 price;
+        bool    active;
+    }
+
+    // Offer status
+    enum OfferStatus { NONE, PENDING, ACCEPTED, REJECTED, CANCELLED }
+
+    struct Offer {
+        uint256    amount;
+        OfferStatus status;
+        uint256    timestamp;
+    }
+
+    mapping(uint256 => Listing) public listings;
+    uint256[] private _activeListingIds;
+
+    // tokenId => offerer => Offer
+    mapping(uint256 => mapping(address => Offer)) private _offers;
+    // tokenId => list of offerers
+    mapping(uint256 => address[]) private _tokenOfferers;
+    // offerer => list of tokenIds they offered on
+    mapping(address => uint256[]) private _offererTokens;
+
+    event NFTMinted(uint256 indexed tokenId, address indexed creator, string tokenURI, uint96 royaltyBps);
+    event Listed(uint256 indexed tokenId, address indexed seller, uint256 price);
+    event Delisted(uint256 indexed tokenId);
+    event Sold(uint256 indexed tokenId, address indexed seller, address indexed buyer, uint256 price);
+    event OfferMade(uint256 indexed tokenId, address indexed offerer, uint256 amount);
+    event OfferAccepted(uint256 indexed tokenId, address indexed offerer, uint256 amount);
+    event OfferRejected(uint256 indexed tokenId, address indexed offerer);
+    event OfferCancelled(uint256 indexed tokenId, address indexed offerer);
+
+    constructor(address _usdc) ERC721("ArcNFT", "ANFT") Ownable(msg.sender) {
+        usdc = IERC20(_usdc);
+    }
+
+    // ─── MINT ───────────────────────────────────
+    function mint(string calldata uri, uint96 royaltyBps) external returns (uint256) {
+        require(royaltyBps <= 1000, "Max 10% royalty");
+        _tokenIdCounter++;
+        uint256 tokenId = _tokenIdCounter;
+        _safeMint(msg.sender, tokenId);
+        _setTokenURI(tokenId, uri);
+        _setTokenRoyalty(tokenId, msg.sender, royaltyBps);
+        emit NFTMinted(tokenId, msg.sender, uri, royaltyBps);
+        return tokenId;
+    }
+
+    // ─── LIST / DELIST ──────────────────────────
+    function listNFT(uint256 tokenId, uint256 price) external {
+        require(ownerOf(tokenId) == msg.sender, "Not owner");
+        require(price > 0, "Price must be > 0");
+        listings[tokenId] = Listing(msg.sender, price, true);
+        _addActiveListing(tokenId);
+        emit Listed(tokenId, msg.sender, price);
+    }
+
+    function delistNFT(uint256 tokenId) external {
+        require(listings[tokenId].seller == msg.sender, "Not seller");
+        listings[tokenId].active = false;
+        _removeActiveListing(tokenId);
+        emit Delisted(tokenId);
+    }
+
+    // ─── BUY ────────────────────────────────────
+    function buyNFT(uint256 tokenId) external {
+        Listing storage lst = listings[tokenId];
+        require(lst.active, "Not listed");
+        require(lst.seller != msg.sender, "Cannot buy own NFT");
+
+        uint256 price    = lst.price;
+        address seller   = lst.seller;
+        uint256 fee      = price * PLATFORM_FEE_BPS / 10000;
+        (address royaltyReceiver, uint256 royaltyAmount) = royaltyInfo(tokenId, price);
+        uint256 sellerAmt = price - fee - royaltyAmount;
+
+        lst.active = false;
+        _removeActiveListing(tokenId);
+
+        require(usdc.transferFrom(msg.sender, address(this), price), "USDC transfer failed");
+        require(usdc.transfer(seller, sellerAmt), "Seller payment failed");
+        if (royaltyAmount > 0 && royaltyReceiver != address(0))
+            require(usdc.transfer(royaltyReceiver, royaltyAmount), "Royalty failed");
+        require(usdc.transfer(owner(), fee), "Fee failed");
+
+        _transfer(seller, msg.sender, tokenId);
+        totalSales++;
+        totalVolume += price;
+        emit Sold(tokenId, seller, msg.sender, price);
+    }
+
+    // ─── OFFERS ─────────────────────────────────
+
+    /// @notice Lock USDC and place an offer on any NFT (listed or not)
+    function makeOffer(uint256 tokenId, uint256 amount) external {
+        require(_ownerOf(tokenId) != address(0), "Token does not exist");
+        require(amount > 0, "Amount must be > 0");
+        require(_ownerOf(tokenId) != msg.sender, "Cannot offer on own NFT");
+
+        Offer storage existing = _offers[tokenId][msg.sender];
+        // Cancel previous pending offer if any (return USDC)
+        if (existing.status == OfferStatus.PENDING && existing.amount > 0) {
+            require(usdc.transfer(msg.sender, existing.amount), "USDC return failed");
+        }
+
+        require(usdc.transferFrom(msg.sender, address(this), amount), "USDC lock failed");
+
+        _offers[tokenId][msg.sender] = Offer(amount, OfferStatus.PENDING, block.timestamp);
+
+        // Track offerer if first time
+        bool found = false;
+        for (uint i = 0; i < _tokenOfferers[tokenId].length; i++) {
+            if (_tokenOfferers[tokenId][i] == msg.sender) { found = true; break; }
+        }
+        if (!found) {
+            _tokenOfferers[tokenId].push(msg.sender);
+            _offererTokens[msg.sender].push(tokenId);
+        }
+
+        emit OfferMade(tokenId, msg.sender, amount);
+    }
+
+    /// @notice NFT owner accepts an offer — transfers NFT, releases USDC minus fees
+    function acceptOffer(uint256 tokenId, address offerer) external {
+        require(ownerOf(tokenId) == msg.sender, "Not owner");
+        Offer storage offer = _offers[tokenId][offerer];
+        require(offer.status == OfferStatus.PENDING, "No pending offer");
+
+        uint256 amount = offer.amount;
+        offer.status   = OfferStatus.ACCEPTED;
+
+        uint256 fee      = amount * PLATFORM_FEE_BPS / 10000;
+        (address royaltyReceiver, uint256 royaltyAmount) = royaltyInfo(tokenId, amount);
+        uint256 sellerAmt = amount - fee - royaltyAmount;
+
+        // Cancel any listing
+        if (listings[tokenId].active) {
+            listings[tokenId].active = false;
+            _removeActiveListing(tokenId);
+        }
+
+        require(usdc.transfer(msg.sender, sellerAmt), "Seller payment failed");
+        if (royaltyAmount > 0 && royaltyReceiver != address(0))
+            require(usdc.transfer(royaltyReceiver, royaltyAmount), "Royalty failed");
+        require(usdc.transfer(owner(), fee), "Fee failed");
+
+        _transfer(msg.sender, offerer, tokenId);
+        totalSales++;
+        totalVolume += amount;
+        emit OfferAccepted(tokenId, offerer, amount);
+    }
+
+    /// @notice NFT owner rejects an offer — returns USDC to offerer
+    function rejectOffer(uint256 tokenId, address offerer) external {
+        require(ownerOf(tokenId) == msg.sender, "Not owner");
+        Offer storage offer = _offers[tokenId][offerer];
+        require(offer.status == OfferStatus.PENDING, "No pending offer");
+        uint256 amount = offer.amount;
+        offer.status   = OfferStatus.REJECTED;
+        require(usdc.transfer(offerer, amount), "USDC return failed");
+        emit OfferRejected(tokenId, offerer);
+    }
+
+    /// @notice Offerer cancels their own offer — returns their USDC
+    function cancelOffer(uint256 tokenId) external {
+        Offer storage offer = _offers[tokenId][msg.sender];
+        require(offer.status == OfferStatus.PENDING, "No pending offer");
+        uint256 amount = offer.amount;
+        offer.status   = OfferStatus.CANCELLED;
+        require(usdc.transfer(msg.sender, amount), "USDC return failed");
+        emit OfferCancelled(tokenId, msg.sender);
+    }
+
+    // ─── OFFER VIEWS ─────────────────────────────
+    function getOffer(uint256 tokenId, address offerer) external view
+        returns (uint256 amount, uint8 status, uint256 timestamp)
+    {
+        Offer memory o = _offers[tokenId][offerer];
+        return (o.amount, uint8(o.status), o.timestamp);
+    }
+
+    function getOffersByToken(uint256 tokenId) external view
+        returns (address[] memory offerers, uint256[] memory amounts, uint8[] memory statuses, uint256[] memory timestamps)
+    {
+        address[] memory offs = _tokenOfferers[tokenId];
+        amounts    = new uint256[](offs.length);
+        statuses   = new uint8[](offs.length);
+        timestamps = new uint256[](offs.length);
+        for (uint i = 0; i < offs.length; i++) {
+            Offer memory o = _offers[tokenId][offs[i]];
+            amounts[i]    = o.amount;
+            statuses[i]   = uint8(o.status);
+            timestamps[i] = o.timestamp;
+        }
+        return (offs, amounts, statuses, timestamps);
+    }
+
+    function getOffersByOfferer(address offerer) external view
+        returns (uint256[] memory tokenIds, uint256[] memory amounts, uint8[] memory statuses, uint256[] memory timestamps)
+    {
+        uint256[] memory tids = _offererTokens[offerer];
+        amounts    = new uint256[](tids.length);
+        statuses   = new uint8[](tids.length);
+        timestamps = new uint256[](tids.length);
+        for (uint i = 0; i < tids.length; i++) {
+            Offer memory o = _offers[tids[i]][offerer];
+            amounts[i]    = o.amount;
+            statuses[i]   = uint8(o.status);
+            timestamps[i] = o.timestamp;
+        }
+        return (tids, amounts, statuses, timestamps);
+    }
+
+    // ─── STATS / VIEWS ──────────────────────────
+    function getStats() external view returns (uint256 minted, uint256 sales, uint256 volume) {
+        return (_tokenIdCounter, totalSales, totalVolume);
+    }
+
+    function getListing(uint256 tokenId) external view returns (address seller, uint256 price, bool active) {
+        Listing memory l = listings[tokenId];
+        return (l.seller, l.price, l.active);
+    }
+
+    function getActiveListings() external view returns (uint256[] memory) {
+        return _activeListingIds;
+    }
+
+    function totalMinted() external view returns (uint256) { return _tokenIdCounter; }
+
+    // ─── INTERNAL ───────────────────────────────
+    function _addActiveListing(uint256 tokenId) internal {
+        for (uint i = 0; i < _activeListingIds.length; i++) {
+            if (_activeListingIds[i] == tokenId) return;
+        }
+        _activeListingIds.push(tokenId);
+    }
+
+    function _removeActiveListing(uint256 tokenId) internal {
+        for (uint i = 0; i < _activeListingIds.length; i++) {
+            if (_activeListingIds[i] == tokenId) {
+                _activeListingIds[i] = _activeListingIds[_activeListingIds.length - 1];
+                _activeListingIds.pop();
+                return;
+            }
+        }
+    }
+
+    // ─── REQUIRED OVERRIDES ─────────────────────
+    function tokenURI(uint256 tokenId) public view override(ERC721, ERC721URIStorage) returns (string memory) {
+        return super.tokenURI(tokenId);
+    }
+
+    function supportsInterface(bytes4 interfaceId) public view override(ERC721, ERC721URIStorage, ERC721Royalty) returns (bool) {
+        return super.supportsInterface(interfaceId);
+    }
+
+    function _update(address to, uint256 tokenId, address auth) internal override(ERC721) returns (address) {
+        return super._update(to, tokenId, auth);
+    }
+}`;
+
+  const blob = new Blob([sol], { type: 'text/plain' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = 'ArcNFTMarketplace.sol';
+  a.click(); URL.revokeObjectURL(url);
+  toast('✅ Contract downloaded! Deploy on Remix IDE.', 'success');
+}
+
+// ── Load banner + restrictions on page start ──
 window.addEventListener('load', () => {
   const banner = localStorage.getItem('admin_banner');
   const bType  = localStorage.getItem('admin_banner_type') || 'info';
