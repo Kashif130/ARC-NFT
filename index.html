@@ -475,11 +475,168 @@ code{
   .bal-badges{flex-wrap:wrap;}
   .nft-grid{grid-template-columns:repeat(auto-fill,minmax(160px,1fr));}
   .admin-grid{grid-template-columns:1fr !important;}
+  .bulk-layout{grid-template-columns:1fr !important;}
+  .search-bar{flex-direction:column;align-items:stretch;}
 }
 
 /* ── PANEL TABS — CRITICAL ── */
 .panel { display: none !important; }
 .panel.active { display: block !important; }
+
+/* ── SEARCH BAR ── */
+.search-bar{
+  display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:14px 18px;
+  margin-bottom:24px;
+  box-shadow:var(--shadow);
+}
+.search-bar input{
+  flex:1;min-width:180px;
+  border:1px solid var(--border2);
+  padding:9px 14px;border-radius:var(--radius);
+}
+.search-bar select{
+  width:auto;padding:9px 14px;
+  border:1px solid var(--border2);border-radius:var(--radius);
+}
+.search-sort{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.search-sort label{font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--ink3);margin:0;}
+.filter-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px;width:100%;}
+.filter-tag{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:3px 10px;border-radius:20px;
+  background:var(--arc-light);color:var(--arc);
+  font-size:12px;font-weight:500;cursor:pointer;
+  border:1px solid rgba(26,107,94,.2);
+}
+.filter-tag:hover{background:var(--arc);color:#fff;}
+.results-count{font-size:13px;color:var(--ink3);margin-bottom:12px;}
+
+/* ── CREATOR PROFILE ── */
+.creator-header{
+  background:var(--white);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:28px;
+  margin-bottom:24px;
+  display:flex;align-items:center;gap:20px;flex-wrap:wrap;
+  box-shadow:var(--shadow);
+}
+.creator-avatar{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--arc-light),var(--usdc-light));
+  border:2px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;flex-shrink:0;
+}
+.creator-info{flex:1;}
+.creator-name{font-family:var(--font-display);font-size:22px;margin-bottom:4px;}
+.creator-addr{font-family:monospace;font-size:13px;color:var(--ink3);}
+.creator-stats{display:flex;gap:24px;margin-top:12px;flex-wrap:wrap;}
+.creator-stat{text-align:center;}
+.creator-stat-val{font-family:var(--font-display);font-size:18px;color:var(--ink);display:block;}
+.creator-stat-lbl{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--ink3);}
+
+/* ── PRICE HISTORY CHART ── */
+.price-chart-wrap{
+  background:var(--white);border:1px solid var(--border);
+  border-radius:var(--radius-lg);padding:20px;
+  margin-top:16px;box-shadow:var(--shadow);
+}
+.price-chart-title{font-family:var(--font-display);font-size:16px;margin-bottom:16px;}
+.chart-canvas-wrap{position:relative;height:160px;width:100%;}
+.chart-canvas-wrap canvas{width:100%!important;}
+.no-history{font-size:13px;color:var(--ink3);text-align:center;padding:32px;}
+.sale-row{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:8px 0;border-bottom:1px solid var(--border);
+  font-size:13px;
+}
+.sale-row:last-child{border:none;}
+.sale-price{font-weight:600;color:var(--usdc);}
+.sale-date{color:var(--ink3);font-size:11px;}
+
+/* ── OFFER SYSTEM ── */
+.offer-section{margin-top:16px;}
+.offer-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.offer-item{
+  display:flex;align-items:center;justify-content:space-between;
+  background:var(--off);border-radius:var(--radius);
+  padding:10px 14px;gap:10px;flex-wrap:wrap;
+}
+.offer-item .offer-from{font-size:12px;color:var(--ink3);font-family:monospace;}
+.offer-item .offer-amt{font-weight:600;color:var(--arc);font-size:14px;}
+.offer-actions{display:flex;gap:6px;}
+.offer-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;
+  text-transform:uppercase;letter-spacing:.5px;
+}
+.offer-pending{background:#fef9c3;color:#854d0e;}
+.offer-accepted{background:#dcfce7;color:#15803d;}
+.offer-rejected{background:#fee2e2;color:#991b1b;}
+
+/* ── BULK OPERATIONS ── */
+.bulk-bar{
+  display:none;
+  background:var(--ink);color:var(--white);
+  border-radius:var(--radius);padding:12px 18px;
+  margin-bottom:16px;
+  align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;
+}
+.bulk-bar.active{display:flex;}
+.bulk-count{font-size:14px;font-weight:500;}
+.bulk-actions{display:flex;gap:8px;}
+.nft-card.selectable{cursor:pointer;position:relative;}
+.nft-card.selectable .select-overlay{
+  display:none;
+  position:absolute;top:10px;right:10px;
+  width:24px;height:24px;border-radius:50%;
+  background:var(--white);border:2px solid var(--border2);
+  align-items:center;justify-content:center;font-size:12px;
+  z-index:5;
+}
+.bulk-mode .nft-card.selectable .select-overlay{display:flex;}
+.nft-card.selectable.selected{border-color:var(--arc);box-shadow:0 0 0 2px rgba(26,107,94,.3);}
+.nft-card.selectable.selected .select-overlay{
+  background:var(--arc);border-color:var(--arc);color:#fff;
+}
+.bulk-mint-area{display:flex;flex-direction:column;gap:12px;margin-top:12px;}
+.bulk-mint-row{
+  display:flex;gap:10px;align-items:center;
+  background:var(--off);border-radius:var(--radius);padding:12px;
+}
+.bulk-mint-row input{margin:0;flex:1;}
+.bulk-mint-row .row-num{
+  width:24px;height:24px;border-radius:50%;
+  background:var(--ink);color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;flex-shrink:0;
+}
+.bulk-remove-btn{
+  background:none;border:none;color:var(--danger);
+  font-size:18px;cursor:pointer;padding:0 4px;flex-shrink:0;
+}
+.bulk-progress{
+  background:var(--off);border-radius:var(--radius);
+  padding:14px;margin-top:12px;display:none;
+}
+.bulk-progress-bar{
+  width:100%;height:6px;background:var(--border);
+  border-radius:3px;overflow:hidden;margin-top:8px;
+}
+.bulk-progress-fill{
+  height:100%;background:var(--arc);
+  border-radius:3px;transition:width .3s;
+}
+.bulk-log{
+  margin-top:10px;max-height:120px;overflow-y:auto;
+  font-size:12px;font-family:monospace;color:var(--ink2);
+}
+.bulk-log-item{padding:2px 0;border-bottom:1px solid var(--border);}
 </style>
 </head>
 <body>
@@ -540,7 +697,9 @@ code{
   <div class="page tabs-inner">
     <button class="tab-btn active" onclick="switchTab('marketplace')">Marketplace</button>
     <button class="tab-btn" onclick="switchTab('mint')">Mint NFT</button>
+    <button class="tab-btn" onclick="switchTab('bulkmint')">Bulk Mint</button>
     <button class="tab-btn" onclick="switchTab('mynfts')">My NFTs</button>
+    <button class="tab-btn" onclick="switchTab('creators')">Creators</button>
     <button class="tab-btn" id="adminTabBtn" onclick="switchTab('admin')" style="display:none">⚙️ Admin</button>
   </div>
 </div>
@@ -572,7 +731,41 @@ code{
     <div class="section">
       <div class="section-head">
         <h2 class="section-title">Listed NFTs</h2>
-        <button class="btn btn-secondary btn-sm" onclick="loadMarketplace()">↺ Refresh</button>
+        <div style="display:flex;gap:8px;">
+          <button class="btn btn-secondary btn-sm" id="bulkBuyToggleBtn" onclick="toggleBulkBuyMode()">☑ Select</button>
+          <button class="btn btn-secondary btn-sm" onclick="loadMarketplace()">↺ Refresh</button>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="🔍 NFT naam ya Token ID se dhundo…" oninput="filterMarketplace()"/>
+        <div class="search-sort">
+          <label>Sort:</label>
+          <select id="sortSelect" onchange="filterMarketplace()">
+            <option value="default">Default</option>
+            <option value="price-asc">Price: Low → High</option>
+            <option value="price-desc">Price: High → Low</option>
+            <option value="id-asc">Token ID: Purana</option>
+            <option value="id-desc">Token ID: Naya</option>
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <label style="margin:0;font-size:12px;color:var(--ink3)">Max Price:</label>
+          <input type="number" id="maxPriceFilter" placeholder="∞ USDC" style="width:100px" oninput="filterMarketplace()"/>
+        </div>
+      </div>
+
+      <div id="resultsCount" class="results-count" style="display:none"></div>
+
+      <!-- Bulk Buy Bar -->
+      <div class="bulk-bar" id="bulkBuyBar">
+        <span class="bulk-count" id="bulkBuyCount">0 NFTs selected</span>
+        <div class="bulk-actions">
+          <span id="bulkBuyTotal" style="font-size:13px;opacity:.8"></span>
+          <button class="btn btn-usdc btn-sm" onclick="executeBulkBuy()">🛒 Bulk Buy</button>
+          <button class="btn btn-secondary btn-sm" onclick="toggleBulkBuyMode()">✕ Cancel</button>
+        </div>
       </div>
 
       <div id="marketplaceGrid" class="nft-grid">
@@ -663,6 +856,89 @@ code{
           <p>Mint your first NFT or buy from the marketplace.</p>
           <button class="btn btn-arc" style="margin-top:16px" onclick="switchTab('mint')">Mint NFT →</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ BULK MINT TAB ══════════════════════ -->
+  <div id="tab-bulkmint" class="panel">
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">🖼️ Bulk Mint</h2>
+        <span style="font-size:13px;color:var(--ink3)">Ek saath kai NFTs mint karo</span>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:28px;" class="bulk-layout">
+        <div class="card">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink3);margin-bottom:16px">NFT List</div>
+          <div class="bulk-mint-area" id="bulkMintArea">
+            <!-- rows added by JS -->
+          </div>
+          <div style="display:flex;gap:8px;margin-top:12px;">
+            <button class="btn btn-secondary btn-sm" onclick="addBulkMintRow()">+ Add NFT</button>
+            <button class="btn btn-secondary btn-sm" onclick="clearBulkMintRows()">Clear All</button>
+          </div>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+            <div class="form-group">
+              <label>Default Royalty for All (%)</label>
+              <input type="number" id="bulkDefaultRoyalty" value="5" min="0" max="10" step="0.5"/>
+            </div>
+            <button class="btn btn-arc btn-full" id="bulkMintBtn" onclick="executeBulkMint()">🚀 Mint All NFTs</button>
+          </div>
+          <!-- Progress -->
+          <div class="bulk-progress" id="bulkMintProgress">
+            <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:500;">
+              <span>Minting in progress…</span>
+              <span id="bulkMintProgressText">0/0</span>
+            </div>
+            <div class="bulk-progress-bar">
+              <div class="bulk-progress-fill" id="bulkMintProgressFill" style="width:0%"></div>
+            </div>
+            <div class="bulk-log" id="bulkMintLog"></div>
+          </div>
+        </div>
+        <div class="card" style="position:sticky;top:140px;align-self:start;">
+          <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink3);margin-bottom:16px">📋 Summary</div>
+          <div id="bulkMintSummary" style="font-size:14px;color:var(--ink3);text-align:center;padding:20px;">
+            NFT rows add karo left side mein
+          </div>
+          <div class="info-bar" style="margin-top:16px;margin-bottom:0;">
+            ℹ️ Har NFT separately blockchain pe mint hoga. Ek ek karke MetaMask confirm karna hoga.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════ CREATORS TAB ══════════════════════ -->
+  <div id="tab-creators" class="panel">
+    <div class="section">
+      <div class="section-head">
+        <h2 class="section-title">👤 Creator Profiles</h2>
+        <button class="btn btn-secondary btn-sm" onclick="loadCreators()">↺ Refresh</button>
+      </div>
+      <div id="creatorsList" style="display:flex;flex-direction:column;gap:16px;">
+        <div class="empty">
+          <span class="empty-icon">👤</span>
+          <div class="empty-title">Connect wallet to see creators</div>
+        </div>
+      </div>
+      <!-- Creator Detail View -->
+      <div id="creatorDetail" style="display:none;">
+        <button class="btn btn-secondary btn-sm" style="margin-bottom:20px;" onclick="closeCreatorDetail()">← Back to Creators</button>
+        <div class="creator-header">
+          <div class="creator-avatar" id="detailAvatar">👤</div>
+          <div class="creator-info">
+            <div class="creator-name" id="detailName">—</div>
+            <div class="creator-addr" id="detailAddr">—</div>
+            <div class="creator-stats">
+              <div class="creator-stat"><span class="creator-stat-val" id="detailMinted">—</span><span class="creator-stat-lbl">Minted</span></div>
+              <div class="creator-stat"><span class="creator-stat-val" id="detailListed">—</span><span class="creator-stat-lbl">Listed</span></div>
+              <div class="creator-stat"><span class="creator-stat-val" id="detailVolume">—</span><span class="creator-stat-lbl">Volume</span></div>
+            </div>
+          </div>
+        </div>
+        <h3 style="font-family:var(--font-display);font-size:18px;margin-bottom:16px;">NFT Collection</h3>
+        <div id="creatorNFTGrid" class="nft-grid"></div>
       </div>
     </div>
   </div>
@@ -918,6 +1194,61 @@ code{
   </div>
 </div>
 
+<!-- OFFER MODAL -->
+<div class="modal-bg" id="offerModal">
+  <div class="modal" style="max-width:440px;">
+    <button class="modal-close" onclick="closeOfferModal()">✕</button>
+    <h2 class="modal-title">💬 Make an Offer</h2>
+    <div class="modal-nft-preview">
+      <div class="modal-nft-img" id="offerModalImg">🖼️</div>
+      <div>
+        <div class="modal-nft-name" id="offerModalName">—</div>
+        <div class="modal-nft-meta" id="offerModalMeta">—</div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Your Offer Price (USDC)</label>
+      <div class="input-with-suffix">
+        <input type="number" id="offerPrice" placeholder="e.g. 5.00" min="0.01" step="0.01"/>
+        <span class="input-suffix">USDC</span>
+      </div>
+      <p class="hint">Seller ko notification milegi. Woh accept ya reject kar sakte hain.</p>
+    </div>
+    <div class="form-group">
+      <label>Message (Optional)</label>
+      <textarea id="offerMessage" placeholder="e.g. Long time fan of your work! Would love to own this." style="min-height:60px;"></textarea>
+    </div>
+    <button class="btn btn-arc btn-full" onclick="submitOffer()">Submit Offer</button>
+    <!-- Existing offers list -->
+    <div class="offer-section">
+      <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--ink3);margin-bottom:8px;">Existing Offers</div>
+      <div id="offerList" class="offer-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PRICE HISTORY MODAL -->
+<div class="modal-bg" id="priceHistoryModal">
+  <div class="modal" style="max-width:520px;">
+    <button class="modal-close" onclick="closePriceHistoryModal()">✕</button>
+    <h2 class="modal-title">📊 Price History</h2>
+    <div class="modal-nft-preview">
+      <div class="modal-nft-img" id="phModalImg">🖼️</div>
+      <div>
+        <div class="modal-nft-name" id="phModalName">—</div>
+        <div class="modal-nft-meta" id="phModalMeta">—</div>
+      </div>
+    </div>
+    <div class="price-chart-wrap">
+      <div class="price-chart-title">📈 Sales History</div>
+      <div id="priceHistoryContent"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:16px;">
+      <button class="btn btn-secondary btn-sm" onclick="closePriceHistoryModal()">Close</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast"></div>
 
@@ -1129,29 +1460,6 @@ async function loadStats() {
 }
 
 // ── MARKETPLACE ──────────────────────────────
-async function loadMarketplace() {
-  const grid = document.getElementById('marketplaceGrid');
-  if (!marketContract) {
-    grid.innerHTML = `<div class="empty"><span class="empty-icon">🏗️</span><div class="empty-title">Deploy contract first</div><p>Contract not found. Check Admin tab.</p></div>`;
-    return;
-  }
-
-  grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--ink3)"><span class="spinner"></span><br/>Loading from Arc Testnet…</div>`;
-
-  try {
-    const ids = await marketContract.getActiveListings();
-    if (ids.length === 0) {
-      grid.innerHTML = `<div class="empty"><span class="empty-icon">🕳️</span><div class="empty-title">No listings yet</div><p>Be the first to list an NFT.</p><button class="btn btn-arc" style="margin-top:16px" onclick="switchTab('mint')">Mint & List →</button></div>`;
-      return;
-    }
-
-    const cards = await Promise.all(ids.map(id => renderNFTCard(id, 'market')));
-    grid.innerHTML = cards.join('');
-    await loadStats();
-  } catch(e) {
-    grid.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span><div class="empty-title">Load failed</div><p>${e.message}</p></div>`;
-  }
-}
 
 async function loadMyNFTs() {
   const grid = document.getElementById('myNFTGrid');
@@ -1502,13 +1810,16 @@ function switchTab(tab) {
   }
 
   // Highlight selected tab button
-  const idx = ['marketplace','mint','mynfts','admin'].indexOf(tab);
+  const tabOrder = ['marketplace','mint','bulkmint','mynfts','creators','admin'];
+  const idx = tabOrder.indexOf(tab);
   const btns = document.querySelectorAll('.tab-btn');
   if (btns[idx]) btns[idx].classList.add('active');
 
   // Load data for tab
   if (tab === 'marketplace' && marketContract) loadMarketplace();
   if (tab === 'mynfts' && marketContract) loadMyNFTs();
+  if (tab === 'creators' && marketContract) loadCreators();
+  if (tab === 'bulkmint') initBulkMint();
   if (tab === 'admin' && isAdmin && marketContract) loadAdminData();
 }
 
@@ -1628,7 +1939,645 @@ async function loadAdminListings() {
   }
 }
 
-// ── SITE SETTINGS ──
+// ══════════════════════════════════════════════
+//  🔍 SEARCH & FILTER SYSTEM
+// ══════════════════════════════════════════════
+
+let allMarketplaceData = []; // {tokenId, meta, price, seller}
+
+async function loadMarketplace() {
+  const grid = document.getElementById('marketplaceGrid');
+  if (!marketContract) {
+    grid.innerHTML = `<div class="empty"><span class="empty-icon">🏗️</span><div class="empty-title">Deploy contract first</div><p>Contract not found. Check Admin tab.</p></div>`;
+    return;
+  }
+  grid.innerHTML = `<div style="padding:40px;text-align:center;color:var(--ink3)"><span class="spinner"></span><br/>Loading from Arc Testnet…</div>`;
+  try {
+    const ids = await marketContract.getActiveListings();
+    if (ids.length === 0) {
+      allMarketplaceData = [];
+      grid.innerHTML = `<div class="empty"><span class="empty-icon">🕳️</span><div class="empty-title">No listings yet</div><p>Be the first to list an NFT.</p><button class="btn btn-arc" style="margin-top:16px" onclick="switchTab('mint')">Mint & List →</button></div>`;
+      return;
+    }
+    allMarketplaceData = await Promise.all(ids.map(async id => {
+      let meta = {}, price = 0n, seller = '';
+      try {
+        const uri = await marketContract.tokenURI(id);
+        meta = await fetchMetadata(id, uri);
+      } catch {}
+      try { [seller, price] = await marketContract.getListing(id); } catch {}
+      return { tokenId: Number(id), meta, price, seller };
+    }));
+    filterMarketplace();
+    await loadStats();
+  } catch(e) {
+    grid.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span><div class="empty-title">Load failed</div><p>${e.message}</p></div>`;
+  }
+}
+
+function filterMarketplace() {
+  const query    = (document.getElementById('searchInput')?.value || '').toLowerCase();
+  const sort     = document.getElementById('sortSelect')?.value || 'default';
+  const maxPrice = parseFloat(document.getElementById('maxPriceFilter')?.value) || Infinity;
+  const grid     = document.getElementById('marketplaceGrid');
+  const countEl  = document.getElementById('resultsCount');
+
+  if (!allMarketplaceData.length) return;
+
+  let filtered = allMarketplaceData.filter(item => {
+    const name = (item.meta.name || `NFT #${item.tokenId}`).toLowerCase();
+    const priceUsdc = Number(item.price) / 1e6;
+    const matchQuery = !query || name.includes(query) || String(item.tokenId).includes(query);
+    const matchPrice = priceUsdc <= maxPrice;
+    return matchQuery && matchPrice;
+  });
+
+  // Sort
+  if (sort === 'price-asc')  filtered.sort((a,b) => Number(a.price) - Number(b.price));
+  if (sort === 'price-desc') filtered.sort((a,b) => Number(b.price) - Number(a.price));
+  if (sort === 'id-asc')     filtered.sort((a,b) => a.tokenId - b.tokenId);
+  if (sort === 'id-desc')    filtered.sort((a,b) => b.tokenId - a.tokenId);
+
+  if (countEl) {
+    countEl.style.display = query || maxPrice < Infinity ? 'block' : 'none';
+    countEl.textContent = `${filtered.length} of ${allMarketplaceData.length} NFTs shown`;
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = `<div class="empty"><span class="empty-icon">🔍</span><div class="empty-title">Koi match nahi mila</div><p>Doosra naam ya price try karo.</p></div>`;
+    return;
+  }
+
+  grid.innerHTML = filtered.map(item => {
+    const { tokenId, meta, price, seller } = item;
+    const img     = meta.image || '';
+    const imgHTML = img ? `<img src="${escHtml(img)}" alt="" onerror="this.parentNode.textContent='🖼️'">` : '🖼️';
+    const priceStr = (Number(price) / 1e6).toFixed(2);
+    const isOwner  = walletAddress && seller.toLowerCase() === walletAddress?.toLowerCase();
+    const isBuyer  = walletAddress && !isOwner;
+
+    let actionBtn = '';
+    if (isBuyer) {
+      actionBtn = `<button class="btn btn-usdc btn-sm" onclick="openBuyModal(${tokenId})">Buy</button>`;
+    }
+
+    const selectOverlay = `<div class="select-overlay">✓</div>`;
+    return `
+<div class="nft-card selectable" id="mcard-${tokenId}" onclick="handleMarketCardClick(${tokenId},event)">
+  ${selectOverlay}
+  <div class="nft-img">${imgHTML}</div>
+  <div class="nft-body">
+    <div class="nft-name">${escHtml(meta.name || `NFT #${tokenId}`)}</div>
+    <div class="nft-creator">
+      Token #${tokenId} · 
+      <span class="explorer-link" style="cursor:pointer" onclick="event.stopPropagation();openCreatorProfile('${escHtml(seller)}')">👤 Creator</span>
+    </div>
+    <div class="nft-footer">
+      <div class="nft-price"><span class="nft-price-val">${priceStr}</span><span class="nft-price-sym">USDC</span></div>
+      <div style="display:flex;gap:5px;flex-wrap:wrap;" onclick="event.stopPropagation()">
+        <button class="btn btn-secondary btn-sm" onclick="openPriceHistory(${tokenId})">📊</button>
+        ${isBuyer ? `<button class="btn btn-secondary btn-sm" onclick="openOfferModal(${tokenId})">💬</button>` : ''}
+        ${actionBtn}
+      </div>
+    </div>
+  </div>
+</div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  🛒 BULK BUY SYSTEM
+// ══════════════════════════════════════════════
+
+let bulkBuyMode = false;
+let bulkBuySelected = new Set();
+
+function toggleBulkBuyMode() {
+  bulkBuyMode = !bulkBuyMode;
+  bulkBuySelected.clear();
+  const grid = document.getElementById('marketplaceGrid');
+  const bar  = document.getElementById('bulkBuyBar');
+  const btn  = document.getElementById('bulkBuyToggleBtn');
+
+  if (bulkBuyMode) {
+    grid.classList.add('bulk-mode');
+    bar.classList.add('active');
+    btn.textContent = '✕ Cancel';
+  } else {
+    grid.classList.remove('bulk-mode');
+    bar.classList.remove('active');
+    btn.textContent = '☑ Select';
+    document.querySelectorAll('.nft-card.selectable.selected').forEach(c => c.classList.remove('selected'));
+  }
+  updateBulkBuyBar();
+}
+
+function handleMarketCardClick(tokenId, event) {
+  if (!bulkBuyMode) return;
+  const card = document.getElementById(`mcard-${tokenId}`);
+  if (!card) return;
+  if (bulkBuySelected.has(tokenId)) {
+    bulkBuySelected.delete(tokenId);
+    card.classList.remove('selected');
+  } else {
+    bulkBuySelected.add(tokenId);
+    card.classList.add('selected');
+  }
+  updateBulkBuyBar();
+}
+
+function updateBulkBuyBar() {
+  document.getElementById('bulkBuyCount').textContent = `${bulkBuySelected.size} NFTs selected`;
+  let total = 0;
+  for (const id of bulkBuySelected) {
+    const item = allMarketplaceData.find(d => d.tokenId === id);
+    if (item) total += Number(item.price) / 1e6;
+  }
+  document.getElementById('bulkBuyTotal').textContent = bulkBuySelected.size ? `Total: ${total.toFixed(2)} USDC` : '';
+}
+
+async function executeBulkBuy() {
+  if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
+  if (bulkBuySelected.size === 0) { toast('Koi NFT select nahi kiya', 'error'); return; }
+  const ids = [...bulkBuySelected];
+  if (!confirm(`${ids.length} NFTs kharidna chahte ho? Har ek ke liye alag transaction hogi.`)) return;
+
+  for (const tokenId of ids) {
+    try {
+      const [,price] = await marketContract.getListing(tokenId);
+      const allowance = await usdcContract.allowance(walletAddress, CONTRACT_ADDRESS);
+      if (allowance < price) {
+        toast(`NFT #${tokenId}: USDC approve ho raha hai…`);
+        const approveTx = await usdcContract.approve(CONTRACT_ADDRESS, price);
+        await approveTx.wait();
+      }
+      toast(`NFT #${tokenId}: Kharid raha hoon…`);
+      const buyTx = await marketContract.buyNFT(tokenId);
+      await buyTx.wait();
+      toast(`✅ NFT #${tokenId} kharid liya!`, 'success');
+    } catch(e) {
+      toast(`❌ NFT #${tokenId} failed: ${e.reason || e.message}`, 'error');
+    }
+  }
+  toggleBulkBuyMode();
+  await refreshBalance();
+  await loadMarketplace();
+  await loadStats();
+}
+
+// ══════════════════════════════════════════════
+//  🖼️ BULK MINT SYSTEM
+// ══════════════════════════════════════════════
+
+let bulkMintRows = [];
+
+function initBulkMint() {
+  bulkMintRows = [];
+  const area = document.getElementById('bulkMintArea');
+  if (!area) return;
+  area.innerHTML = '';
+  addBulkMintRow();
+  addBulkMintRow();
+  addBulkMintRow();
+  updateBulkMintSummary();
+}
+
+function addBulkMintRow() {
+  const id = Date.now() + Math.random();
+  bulkMintRows.push(id);
+  const area = document.getElementById('bulkMintArea');
+  const num  = bulkMintRows.length;
+  const row  = document.createElement('div');
+  row.className = 'bulk-mint-row';
+  row.id = `brow-${id}`;
+  row.innerHTML = `
+    <div class="row-num">${num}</div>
+    <input type="text" placeholder="NFT Name #${num}" oninput="updateBulkMintSummary()" style="flex:2;" class="bmrow-name" />
+    <input type="url" placeholder="Image URL" oninput="updateBulkMintSummary()" style="flex:3;" class="bmrow-img" />
+    <button class="bulk-remove-btn" onclick="removeBulkMintRow('${id}')">✕</button>`;
+  area.appendChild(row);
+  updateBulkMintSummary();
+}
+
+function removeBulkMintRow(id) {
+  const el = document.getElementById(`brow-${id}`);
+  if (el) el.remove();
+  bulkMintRows = bulkMintRows.filter(r => r !== id);
+  // Renumber
+  document.querySelectorAll('.bulk-mint-row .row-num').forEach((el,i) => el.textContent = i+1);
+  updateBulkMintSummary();
+}
+
+function clearBulkMintRows() {
+  document.getElementById('bulkMintArea').innerHTML = '';
+  bulkMintRows = [];
+  addBulkMintRow();
+  updateBulkMintSummary();
+}
+
+function updateBulkMintSummary() {
+  const rows = document.querySelectorAll('.bulk-mint-row');
+  let valid = 0;
+  rows.forEach(row => {
+    const name = row.querySelector('.bmrow-name')?.value.trim();
+    const img  = row.querySelector('.bmrow-img')?.value.trim();
+    if (name && img) valid++;
+  });
+  const summaryEl = document.getElementById('bulkMintSummary');
+  if (summaryEl) {
+    summaryEl.innerHTML = `
+      <div style="display:flex;flex-direction:column;gap:12px;text-align:left;">
+        <div style="display:flex;justify-content:space-between;font-size:14px;">
+          <span style="color:var(--ink3)">Total Rows:</span>
+          <strong>${rows.length}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;">
+          <span style="color:var(--ink3)">Ready to Mint:</span>
+          <strong style="color:var(--arc)">${valid}</strong>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:14px;">
+          <span style="color:var(--ink3)">Incomplete:</span>
+          <strong style="color:var(--danger)">${rows.length - valid}</strong>
+        </div>
+        ${valid > 0 ? `<div class="nft-badge badge-listed" style="text-align:center;padding:8px;">${valid} NFTs mint honge</div>` : ''}
+      </div>`;
+  }
+}
+
+async function executeBulkMint() {
+  if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
+  if (!marketContract) { toast('Contract not connected', 'error'); return; }
+
+  const rows = document.querySelectorAll('.bulk-mint-row');
+  const nfts = [];
+  rows.forEach(row => {
+    const name = row.querySelector('.bmrow-name')?.value.trim();
+    const img  = row.querySelector('.bmrow-img')?.value.trim();
+    if (name && img) nfts.push({ name, img });
+  });
+
+  if (nfts.length === 0) { toast('Koi valid NFT nahi mila', 'error'); return; }
+  if (!confirm(`${nfts.length} NFTs mint karna chahte ho? Har ek ke liye MetaMask confirm karna hoga.`)) return;
+
+  const royBps = Math.round(parseFloat(document.getElementById('bulkDefaultRoyalty')?.value || 5) * 100);
+  const progressDiv = document.getElementById('bulkMintProgress');
+  const fillEl      = document.getElementById('bulkMintProgressFill');
+  const textEl      = document.getElementById('bulkMintProgressText');
+  const logEl       = document.getElementById('bulkMintLog');
+  const btn         = document.getElementById('bulkMintBtn');
+
+  progressDiv.style.display = 'block';
+  btn.disabled = true;
+  logEl.innerHTML = '';
+
+  let done = 0;
+  for (const nft of nfts) {
+    try {
+      const meta   = JSON.stringify({ name: nft.name, description: '', image: nft.img });
+      const metaURI = 'data:application/json;base64,' + btoa(unescape(encodeURIComponent(meta)));
+      const tx = await marketContract.mint(metaURI, royBps);
+      logEl.innerHTML += `<div class="bulk-log-item">⏳ ${escHtml(nft.name)}: Tx sent…</div>`;
+      const receipt = await tx.wait();
+      done++;
+      const pct = Math.round(done / nfts.length * 100);
+      fillEl.style.width = pct + '%';
+      textEl.textContent = `${done}/${nfts.length}`;
+      logEl.innerHTML += `<div class="bulk-log-item" style="color:var(--arc)">✅ ${escHtml(nft.name)} minted!</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    } catch(e) {
+      logEl.innerHTML += `<div class="bulk-log-item" style="color:var(--danger)">❌ ${escHtml(nft.name)}: ${e.reason || e.message}</div>`;
+      logEl.scrollTop = logEl.scrollHeight;
+    }
+  }
+
+  toast(`🎉 ${done}/${nfts.length} NFTs minted!`, 'success');
+  btn.disabled = false;
+  await loadStats();
+  await loadMyNFTs();
+}
+
+// ══════════════════════════════════════════════
+//  👤 CREATOR PROFILES
+// ══════════════════════════════════════════════
+
+async function loadCreators() {
+  const listEl = document.getElementById('creatorsList');
+  const detailEl = document.getElementById('creatorDetail');
+  if (!marketContract) {
+    listEl.innerHTML = `<div class="empty"><span class="empty-icon">🔌</span><div class="empty-title">Connect wallet first</div></div>`;
+    return;
+  }
+  listEl.innerHTML = `<div style="text-align:center;padding:40px;color:var(--ink3)"><span class="spinner"></span><br/>Loading creators…</div>`;
+  detailEl.style.display = 'none';
+  listEl.style.display = 'flex';
+
+  try {
+    const total = Number(await marketContract.totalMinted());
+    const creatorMap = {}; // addr -> {nfts:[], volume:0, listed:0}
+
+    for (let i = 1; i <= total; i++) {
+      try {
+        const uri    = await marketContract.tokenURI(i);
+        const meta   = await fetchMetadata(i, uri);
+        // Get original creator from Minted event — use ownerOf as proxy if no event parsing
+        // We'll track current owner as creator for simplicity
+        const owner  = await marketContract.ownerOf(i);
+        if (!creatorMap[owner]) creatorMap[owner] = { nfts: [], listed: 0, volume: 0 };
+        creatorMap[owner].nfts.push({ tokenId: i, meta });
+
+        try {
+          const [,price,active] = await marketContract.getListing(i);
+          if (active) { creatorMap[owner].listed++; creatorMap[owner].volume += Number(price)/1e6; }
+        } catch {}
+      } catch {}
+    }
+
+    const creators = Object.entries(creatorMap);
+    if (creators.length === 0) {
+      listEl.innerHTML = `<div class="empty"><span class="empty-icon">👤</span><div class="empty-title">Koi creator nahi mila</div></div>`;
+      return;
+    }
+
+    listEl.innerHTML = creators.map(([addr, data]) => {
+      const short = addr.slice(0,6) + '…' + addr.slice(-4);
+      const emoji = ['🎨','🖼️','🎭','🌟','💎','🔮'][parseInt(addr.slice(2,4),16) % 6];
+      return `
+<div style="background:var(--white);border:1px solid var(--border);border-radius:var(--radius-lg);padding:20px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;" 
+     onmouseover="this.style.borderColor='var(--arc)'" onmouseout="this.style.borderColor='var(--border)'"
+     onclick="openCreatorProfileFull('${addr}')">
+  <div style="display:flex;align-items:center;gap:14px;">
+    <div class="creator-avatar">${emoji}</div>
+    <div>
+      <div style="font-family:var(--font-display);font-size:16px;">${short}</div>
+      <div style="font-size:12px;color:var(--ink3);font-family:monospace;">${addr}</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:20px;">
+    <div class="creator-stat"><span class="creator-stat-val">${data.nfts.length}</span><span class="creator-stat-lbl">NFTs</span></div>
+    <div class="creator-stat"><span class="creator-stat-val">${data.listed}</span><span class="creator-stat-lbl">Listed</span></div>
+    <div class="creator-stat"><span class="creator-stat-val">${data.volume.toFixed(1)}</span><span class="creator-stat-lbl">Vol USDC</span></div>
+  </div>
+  <button class="btn btn-arc btn-sm" onclick="event.stopPropagation();openCreatorProfileFull('${addr}')">View Portfolio →</button>
+</div>`;
+    }).join('');
+
+    // store for profile lookup
+    window._creatorMap = creatorMap;
+  } catch(e) {
+    listEl.innerHTML = `<div class="empty"><span class="empty-icon">⚠️</span><div class="empty-title">Load failed</div><p>${e.message}</p></div>`;
+  }
+}
+
+async function openCreatorProfile(addr) {
+  switchTab('creators');
+  setTimeout(() => openCreatorProfileFull(addr), 300);
+}
+
+async function openCreatorProfileFull(addr) {
+  const listEl   = document.getElementById('creatorsList');
+  const detailEl = document.getElementById('creatorDetail');
+  listEl.style.display = 'none';
+  detailEl.style.display = 'block';
+
+  const short = addr.slice(0,6) + '…' + addr.slice(-4);
+  const emoji = ['🎨','🖼️','🎭','🌟','💎','🔮'][parseInt(addr.slice(2,4),16) % 6];
+  document.getElementById('detailAvatar').textContent = emoji;
+  document.getElementById('detailName').textContent   = short;
+  document.getElementById('detailAddr').textContent   = addr;
+
+  const data = window._creatorMap?.[addr];
+  if (data) {
+    document.getElementById('detailMinted').textContent  = data.nfts.length;
+    document.getElementById('detailListed').textContent  = data.listed;
+    document.getElementById('detailVolume').textContent  = data.volume.toFixed(2);
+    const nftGrid = document.getElementById('creatorNFTGrid');
+    nftGrid.innerHTML = `<div style="text-align:center;padding:20px;color:var(--ink3)"><span class="spinner"></span></div>`;
+    const cards = await Promise.all(data.nfts.map(n => renderNFTCard(n.tokenId, 'market')));
+    nftGrid.innerHTML = cards.join('');
+  } else {
+    // Load fresh
+    document.getElementById('detailMinted').textContent = '…';
+    document.getElementById('detailListed').textContent = '…';
+    document.getElementById('detailVolume').textContent = '…';
+    document.getElementById('creatorNFTGrid').innerHTML = `<div style="text-align:center;padding:20px;"><span class="spinner"></span></div>`;
+    await loadCreators();
+    await openCreatorProfileFull(addr);
+  }
+}
+
+function closeCreatorDetail() {
+  document.getElementById('creatorDetail').style.display = 'none';
+  document.getElementById('creatorsList').style.display = 'flex';
+}
+
+// ══════════════════════════════════════════════
+//  📊 PRICE HISTORY
+// ══════════════════════════════════════════════
+
+let _priceHistoryCache = {}; // tokenId -> [{price, date, buyer, seller}]
+
+async function openPriceHistory(tokenId) {
+  const modal = document.getElementById('priceHistoryModal');
+  modal.classList.add('open');
+
+  // Populate header
+  try {
+    const uri  = await marketContract.tokenURI(tokenId);
+    const meta = await fetchMetadata(tokenId, uri);
+    const imgEl = document.getElementById('phModalImg');
+    if (meta.image) imgEl.innerHTML = `<img src="${escHtml(meta.image)}" onerror="this.parentNode.textContent='🖼️'" style="width:100%;height:100%;object-fit:cover">`;
+    else imgEl.textContent = '🖼️';
+    document.getElementById('phModalName').textContent = meta.name || `NFT #${tokenId}`;
+    document.getElementById('phModalMeta').textContent = `Token #${tokenId}`;
+  } catch {}
+
+  const content = document.getElementById('priceHistoryContent');
+  content.innerHTML = `<div style="text-align:center;padding:20px;"><span class="spinner"></span></div>`;
+
+  // Fetch Sold events for this token
+  try {
+    if (!_priceHistoryCache[tokenId]) {
+      const filter = marketContract.filters.Sold(tokenId);
+      const events = await marketContract.queryFilter(filter, 0, 'latest');
+      _priceHistoryCache[tokenId] = events.map(e => ({
+        price: Number(e.args[3]) / 1e6,
+        seller: e.args[1],
+        buyer:  e.args[2],
+        block:  e.blockNumber
+      }));
+    }
+    const history = _priceHistoryCache[tokenId];
+
+    if (history.length === 0) {
+      content.innerHTML = `<div class="no-history">📭 Is NFT ki koi bhi sale history nahi hai abhi tak.</div>`;
+      return;
+    }
+
+    // Render simple table + mini bar chart
+    const maxPrice = Math.max(...history.map(h => h.price));
+    const bars = history.map((h, i) => {
+      const pct = (h.price / maxPrice * 100).toFixed(0);
+      return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <div style="font-size:11px;color:var(--ink3);width:18px;text-align:right;">#${i+1}</div>
+        <div style="flex:1;background:var(--off);border-radius:3px;height:18px;overflow:hidden;">
+          <div style="width:${pct}%;height:100%;background:linear-gradient(90deg,var(--arc),var(--usdc));border-radius:3px;"></div>
+        </div>
+        <div style="font-weight:600;color:var(--usdc);font-size:13px;width:70px;text-align:right;">${h.price.toFixed(2)} USDC</div>
+      </div>`;
+    }).join('');
+
+    const rows = history.map((h, i) => `
+      <div class="sale-row">
+        <span>Sale #${i+1}</span>
+        <span class="sale-price">${h.price.toFixed(2)} USDC</span>
+        <span class="sale-date">${h.buyer.slice(0,6)}…${h.buyer.slice(-4)}</span>
+      </div>`).join('');
+
+    const avg = (history.reduce((s,h) => s+h.price, 0) / history.length).toFixed(2);
+    const high = maxPrice.toFixed(2);
+    const low  = Math.min(...history.map(h => h.price)).toFixed(2);
+
+    content.innerHTML = `
+      <div style="display:flex;gap:16px;margin-bottom:16px;flex-wrap:wrap;">
+        <div class="card" style="flex:1;padding:12px;text-align:center;min-width:80px;">
+          <div style="font-family:var(--font-display);font-size:18px;color:var(--arc)">${high}</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--ink3)">Highest</div>
+        </div>
+        <div class="card" style="flex:1;padding:12px;text-align:center;min-width:80px;">
+          <div style="font-family:var(--font-display);font-size:18px;">${avg}</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--ink3)">Average</div>
+        </div>
+        <div class="card" style="flex:1;padding:12px;text-align:center;min-width:80px;">
+          <div style="font-family:var(--font-display);font-size:18px;color:var(--usdc)">${low}</div>
+          <div style="font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--ink3)">Lowest</div>
+        </div>
+      </div>
+      <div style="margin-bottom:16px;">${bars}</div>
+      <div style="max-height:180px;overflow-y:auto;">${rows}</div>`;
+  } catch(e) {
+    content.innerHTML = `<div class="no-history" style="color:var(--danger)">History load failed: ${e.message}</div>`;
+  }
+}
+
+function closePriceHistoryModal() {
+  document.getElementById('priceHistoryModal').classList.remove('open');
+}
+
+// ══════════════════════════════════════════════
+//  💬 OFFER SYSTEM (localStorage-based)
+// ══════════════════════════════════════════════
+
+let pendingOfferTokenId = null;
+
+function getOffersKey(tokenId) { return `arcnft_offers_${CONTRACT_ADDRESS}_${tokenId}`; }
+
+function getOffers(tokenId) {
+  try { return JSON.parse(localStorage.getItem(getOffersKey(tokenId)) || '[]'); } catch { return []; }
+}
+
+function saveOffers(tokenId, offers) {
+  localStorage.setItem(getOffersKey(tokenId), JSON.stringify(offers));
+}
+
+async function openOfferModal(tokenId) {
+  if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
+  pendingOfferTokenId = tokenId;
+
+  try {
+    const uri  = await marketContract.tokenURI(tokenId);
+    const meta = await fetchMetadata(tokenId, uri);
+    const [,price] = await marketContract.getListing(tokenId);
+    const imgEl = document.getElementById('offerModalImg');
+    if (meta.image) imgEl.innerHTML = `<img src="${escHtml(meta.image)}" onerror="this.parentNode.textContent='🖼️'" style="width:100%;height:100%;object-fit:cover">`;
+    else imgEl.textContent = '🖼️';
+    document.getElementById('offerModalName').textContent = meta.name || `NFT #${tokenId}`;
+    document.getElementById('offerModalMeta').textContent = `Token #${tokenId} · Listed: ${(Number(price)/1e6).toFixed(2)} USDC`;
+  } catch {}
+
+  document.getElementById('offerPrice').value = '';
+  document.getElementById('offerMessage').value = '';
+  renderOfferList(tokenId);
+  document.getElementById('offerModal').classList.add('open');
+}
+
+function closeOfferModal() {
+  document.getElementById('offerModal').classList.remove('open');
+  pendingOfferTokenId = null;
+}
+
+function renderOfferList(tokenId) {
+  const listEl = document.getElementById('offerList');
+  const offers = getOffers(tokenId);
+  if (offers.length === 0) {
+    listEl.innerHTML = `<div style="font-size:13px;color:var(--ink3);text-align:center;padding:12px;">Abhi tak koi offer nahi</div>`;
+    return;
+  }
+  listEl.innerHTML = offers.map((o, i) => {
+    const isMyOffer = o.from?.toLowerCase() === walletAddress?.toLowerCase();
+    const statusBadge = `<span class="offer-badge offer-${o.status}">${o.status === 'pending' ? '⏳ Pending' : o.status === 'accepted' ? '✅ Accepted' : '❌ Rejected'}</span>`;
+    return `
+<div class="offer-item">
+  <div>
+    <div class="offer-amt">${o.price} USDC</div>
+    <div class="offer-from">${o.from?.slice(0,6)}…${o.from?.slice(-4)}</div>
+    ${o.message ? `<div style="font-size:12px;color:var(--ink3);margin-top:2px;">"${escHtml(o.message)}"</div>` : ''}
+  </div>
+  <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px;">
+    ${statusBadge}
+    <div class="offer-actions">
+      ${!isMyOffer && o.status === 'pending' ? `
+        <button class="btn btn-arc btn-sm" onclick="respondOffer(${tokenId},${i},'accepted')">Accept</button>
+        <button class="btn btn-danger btn-sm" onclick="respondOffer(${tokenId},${i},'rejected')">Reject</button>
+      ` : ''}
+      ${isMyOffer && o.status === 'pending' ? `<button class="btn btn-secondary btn-sm" onclick="cancelOffer(${tokenId},${i})">Cancel</button>` : ''}
+    </div>
+  </div>
+</div>`;
+  }).join('');
+}
+
+function submitOffer() {
+  const tokenId = pendingOfferTokenId;
+  if (!tokenId) return;
+  const price = parseFloat(document.getElementById('offerPrice').value);
+  const message = document.getElementById('offerMessage').value.trim();
+
+  if (!price || price <= 0) { toast('Valid price dalo', 'error'); return; }
+
+  const offers = getOffers(tokenId);
+  offers.unshift({
+    from: walletAddress,
+    price: price.toFixed(2),
+    message,
+    status: 'pending',
+    timestamp: Date.now()
+  });
+  saveOffers(tokenId, offers);
+  renderOfferList(tokenId);
+  document.getElementById('offerPrice').value = '';
+  document.getElementById('offerMessage').value = '';
+  toast(`✅ Offer of ${price.toFixed(2)} USDC submit ho gaya!`, 'success');
+}
+
+function respondOffer(tokenId, index, status) {
+  const offers = getOffers(tokenId);
+  if (offers[index]) {
+    offers[index].status = status;
+    saveOffers(tokenId, offers);
+    renderOfferList(tokenId);
+    toast(status === 'accepted' ? '✅ Offer accept kar liya!' : '❌ Offer reject kar diya.', status === 'accepted' ? 'success' : '');
+  }
+}
+
+function cancelOffer(tokenId, index) {
+  const offers = getOffers(tokenId);
+  offers.splice(index, 1);
+  saveOffers(tokenId, offers);
+  renderOfferList(tokenId);
+  toast('Offer cancel ho gaya.', '');
+}
+
+
 function saveSiteSettings() {
   const title    = document.getElementById('siteTitle').value.trim();
   const subtitle = document.getElementById('siteSubtitle').value.trim();
