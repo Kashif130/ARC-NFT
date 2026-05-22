@@ -982,6 +982,9 @@ code{
       <!-- Profile setup form -->
       <div id="profileSetupArea" style="display:none;max-width:680px;">
 
+        <!-- Onchain status bar -->
+        <div id="profileOnchainStatus" class="info-bar" style="margin-bottom:16px;"></div>
+
         <!-- Live preview -->
         <div class="creator-setup-card">
           <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
@@ -1044,7 +1047,7 @@ code{
             <input type="text" id="profileTwitterInput" placeholder="@YourHandle"/>
           </div>
 
-          <button class="btn btn-arc btn-full" onclick="saveCreatorProfile()">💾 Save Profile</button>
+          <button class="btn btn-arc btn-full" onclick="saveCreatorProfile()">💾 Save Profile Onchain</button>
         </div>
       </div>
     </div>
@@ -1179,6 +1182,58 @@ code{
               <input type="text" id="bannerMsg" placeholder="e.g. 🎉 New collection live now!"/>
             </div>
             <button class="btn btn-arc btn-full" onclick="saveSiteSettings()">Save Site Settings</button>
+          </div>
+
+          <!-- ── PROFILE REGISTRY CONTRACT ── -->
+          <div class="card">
+            <div style="font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;color:var(--ink3);margin-bottom:16px">🔗 Profile Registry Contract (Onchain Profiles)</div>
+            <div class="info-bar" style="margin-bottom:16px;">
+              ℹ️ Deploy the ProfileRegistry contract on Arc Testnet and paste its address below. Profiles (username, bio, Twitter, avatar) will then be stored onchain — visible to all users, not just locally.
+            </div>
+            <div class="form-group">
+              <label>Profile Contract Address</label>
+              <input type="text" id="profileContractInput" placeholder="0x…"
+                     oninput="document.getElementById('profileContractInput').style.borderColor=''"/>
+              <p class="hint">After deploying ProfileRegistry.sol on Arc Testnet, paste address here. Leave blank to use local-only storage.</p>
+            </div>
+            <div id="profileContractStatus" style="font-size:12px;margin-bottom:12px;"></div>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <button class="btn btn-arc" onclick="setProfileContract()">Set Profile Contract</button>
+              <button class="btn btn-secondary" onclick="clearProfileContract()">Clear (Use Local)</button>
+            </div>
+            <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);">
+              <div style="font-size:12px;font-weight:600;color:var(--ink3);margin-bottom:8px;">📄 Contract Source (deploy via Remix IDE)</div>
+              <div style="background:var(--off);border-radius:var(--radius);padding:12px;font-family:monospace;font-size:11px;color:var(--arc);overflow-x:auto;white-space:pre;">// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+contract ProfileRegistry {
+  struct Profile { string username; string bio; string twitter; string pic; uint256 updatedAt; }
+  mapping(address =&gt; Profile) private _profiles;
+  mapping(string =&gt; address) private _usernameTaken;
+  event ProfileUpdated(address indexed user, string username);
+  function setProfile(string calldata username, string calldata bio,
+    string calldata twitter, string calldata pic) external {
+    require(bytes(username).length &gt; 0 &amp;&amp; bytes(username).length &lt;= 30);
+    require(bytes(bio).length &lt;= 200);
+    address ex = _usernameTaken[username];
+    require(ex == address(0) || ex == msg.sender, "Username taken");
+    if (bytes(_profiles[msg.sender].username).length &gt; 0)
+      _usernameTaken[_profiles[msg.sender].username] = address(0);
+    _usernameTaken[username] = msg.sender;
+    _profiles[msg.sender] = Profile(username, bio, twitter, pic, block.timestamp);
+    emit ProfileUpdated(msg.sender, username);
+  }
+  function getProfile(address user) external view returns
+    (string memory, string memory, string memory, string memory, uint256) {
+    Profile storage p = _profiles[user];
+    return (p.username, p.bio, p.twitter, p.pic, p.updatedAt);
+  }
+  function isUsernameTaken(string calldata u) external view returns (bool) {
+    return _usernameTaken[u] != address(0);
+  }
+}</div>
+              <button class="copy-btn" onclick="copyProfileSource()">📋 Copy Source</button>
+              <a href="https://remix.ethereum.org" target="_blank" class="btn btn-secondary btn-sm" style="margin-top:8px;">Open Remix IDE ↗</a>
+            </div>
           </div>
 
           <!-- ── MINT CONTROL ── -->
@@ -1441,10 +1496,51 @@ const USDC_ABI = [
   "function decimals() view returns (uint8)"
 ];
 
+// ── PROFILE REGISTRY ABI ─────────────────────
+// Deploy this Solidity contract on Arc Testnet:
+// https://gist.github.com/arcnft/profileregistry
+/*
+  Contract source (for reference):
+  // SPDX-License-Identifier: MIT
+  pragma solidity ^0.8.20;
+  contract ProfileRegistry {
+    struct Profile { string username; string bio; string twitter; string pic; uint256 updatedAt; }
+    mapping(address => Profile) private _profiles;
+    mapping(string => address) private _usernameTaken;
+    event ProfileUpdated(address indexed user, string username);
+    function setProfile(string calldata username, string calldata bio, string calldata twitter, string calldata pic) external {
+      require(bytes(username).length > 0 && bytes(username).length <= 30, "Bad username");
+      require(bytes(bio).length <= 200, "Bio too long");
+      address existing = _usernameTaken[username];
+      require(existing == address(0) || existing == msg.sender, "Username taken");
+      if (bytes(_profiles[msg.sender].username).length > 0) {
+        _usernameTaken[_profiles[msg.sender].username] = address(0);
+      }
+      _usernameTaken[username] = msg.sender;
+      _profiles[msg.sender] = Profile(username, bio, twitter, pic, block.timestamp);
+      emit ProfileUpdated(msg.sender, username);
+    }
+    function getProfile(address user) external view returns (string memory username, string memory bio, string memory twitter, string memory pic, uint256 updatedAt) {
+      Profile storage p = _profiles[user];
+      return (p.username, p.bio, p.twitter, p.pic, p.updatedAt);
+    }
+    function isUsernameTaken(string calldata username) external view returns (bool) {
+      return _usernameTaken[username] != address(0);
+    }
+  }
+*/
+const PROFILE_REGISTRY_ABI = [
+  "function setProfile(string username, string bio, string twitter, string pic)",
+  "function getProfile(address user) view returns (string username, string bio, string twitter, string pic, uint256 updatedAt)",
+  "function isUsernameTaken(string username) view returns (bool)",
+  "event ProfileUpdated(address indexed user, string username)"
+];
+
 // ── STATE ───────────────────────────────────
 let provider, signer, walletAddress;
-let marketContract, usdcContract;
+let marketContract, usdcContract, profileContract;
 let CONTRACT_ADDRESS = '0xdF5068Ece86Aea0c5817c90E4eAbbF2661966406';
+let PROFILE_CONTRACT_ADDRESS = localStorage.getItem('arcnft_profile_contract') || '';
 let pendingBuyTokenId = null;
 let pendingListTokenId = null;
 let nftMetadataCache = {};
@@ -1463,6 +1559,10 @@ window.onload = async () => {
   livePreviewSetup();
   updateRoyaltyPreview();
   if (CONTRACT_ADDRESS) loadStats();
+
+  // Restore profile contract input if saved
+  const pcInput = document.getElementById('profileContractInput');
+  if (pcInput && PROFILE_CONTRACT_ADDRESS) pcInput.value = PROFILE_CONTRACT_ADDRESS;
 };
 
 // ── WALLET ──────────────────────────────────
@@ -1507,6 +1607,10 @@ async function onWalletConnected() {
 
   usdcContract = new ethers.Contract(USDC_ADDRESS, USDC_ABI, signer);
   await refreshBalance();
+
+  if (PROFILE_CONTRACT_ADDRESS) {
+    profileContract = new ethers.Contract(PROFILE_CONTRACT_ADDRESS, PROFILE_REGISTRY_ABI, signer);
+  }
 
   if (CONTRACT_ADDRESS) {
     marketContract = new ethers.Contract(CONTRACT_ADDRESS, MARKET_ABI, signer);
@@ -2111,6 +2215,8 @@ async function loadMarketplace() {
       try { [seller, price] = await marketContract.getListing(id); } catch {}
       return { tokenId: Number(id), meta, price, seller };
     }));
+    // Prefetch creator profiles from chain so names/avatars show correctly
+    await prefetchProfiles(allMarketplaceData.map(d => d.seller).filter(Boolean));
     filterMarketplace();
     await loadStats();
   } catch(e) {
@@ -2398,6 +2504,71 @@ async function executeBulkMint() {
   await loadMyNFTs();
 }
 
+// ── Profile Contract Setup ──
+function setProfileContract() {
+  const addr = document.getElementById('profileContractInput').value.trim();
+  const statusEl = document.getElementById('profileContractStatus');
+  if (!addr) {
+    clearProfileContract(); return;
+  }
+  if (!ethers.isAddress(addr)) {
+    statusEl.innerHTML = '<span style="color:var(--danger)">❌ Invalid address</span>';
+    document.getElementById('profileContractInput').style.borderColor = 'var(--danger)';
+    return;
+  }
+  PROFILE_CONTRACT_ADDRESS = addr;
+  localStorage.setItem('arcnft_profile_contract', addr);
+  if (signer) {
+    profileContract = new ethers.Contract(addr, PROFILE_REGISTRY_ABI, signer);
+    statusEl.innerHTML = `<span style="color:var(--arc)">✅ Profile contract set! <a href="${ARC_EXPLORER}/address/${addr}" target="_blank" class="explorer-link">View on ArcScan ↗</a></span>`;
+  } else {
+    statusEl.innerHTML = `<span style="color:var(--arc)">✅ Saved. Will activate on next wallet connect.</span>`;
+  }
+  // Clear profile cache so data re-fetches from chain
+  Object.keys(_profileCache).forEach(k => delete _profileCache[k]);
+  toast('✅ Profile contract set! Profiles are now onchain.', 'success');
+}
+
+function clearProfileContract() {
+  PROFILE_CONTRACT_ADDRESS = '';
+  profileContract = null;
+  localStorage.removeItem('arcnft_profile_contract');
+  const statusEl = document.getElementById('profileContractStatus');
+  if (statusEl) statusEl.innerHTML = '<span style="color:var(--ink3)">Cleared — profiles will save locally.</span>';
+  document.getElementById('profileContractInput').value = '';
+  toast('Profile contract cleared. Using local storage.', 'success');
+}
+
+function copyProfileSource() {
+  const src = `// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+contract ProfileRegistry {
+  struct Profile { string username; string bio; string twitter; string pic; uint256 updatedAt; }
+  mapping(address => Profile) private _profiles;
+  mapping(string => address) private _usernameTaken;
+  event ProfileUpdated(address indexed user, string username);
+  function setProfile(string calldata username, string calldata bio, string calldata twitter, string calldata pic) external {
+    require(bytes(username).length > 0 && bytes(username).length <= 30, "Bad username");
+    require(bytes(bio).length <= 200, "Bio too long");
+    address ex = _usernameTaken[username];
+    require(ex == address(0) || ex == msg.sender, "Username taken");
+    if (bytes(_profiles[msg.sender].username).length > 0)
+      _usernameTaken[_profiles[msg.sender].username] = address(0);
+    _usernameTaken[username] = msg.sender;
+    _profiles[msg.sender] = Profile(username, bio, twitter, pic, block.timestamp);
+    emit ProfileUpdated(msg.sender, username);
+  }
+  function getProfile(address user) external view returns (string memory, string memory, string memory, string memory, uint256) {
+    Profile storage p = _profiles[user];
+    return (p.username, p.bio, p.twitter, p.pic, p.updatedAt);
+  }
+  function isUsernameTaken(string calldata u) external view returns (bool) {
+    return _usernameTaken[u] != address(0);
+  }
+}`;
+  navigator.clipboard.writeText(src).then(() => toast('📋 Contract source copied!', 'success')).catch(() => toast('Copy failed', 'error'));
+}
+
 // ══════════════════════════════════════════════
 //  👤 CREATOR PROFILES
 // ══════════════════════════════════════════════
@@ -2439,6 +2610,9 @@ async function loadCreators() {
       listEl.innerHTML = `<div class="empty"><span class="empty-icon">👤</span><div class="empty-title">No creators found yet</div></div>`;
       return;
     }
+
+    // Prefetch all profiles from chain at once
+    await prefetchProfiles(creators.map(([addr]) => addr));
 
     listEl.innerHTML = creators.map(([addr, data]) => {
       const displayName = getDisplayName(addr);
@@ -2483,7 +2657,8 @@ async function openCreatorProfileFull(addr) {
   listEl.style.display = 'none';
   detailEl.style.display = 'block';
 
-  const profile = getCreatorProfile(addr);
+  // Fetch profile from chain (may already be cached)
+  const profile = await fetchOnchainProfile(addr);
   const displayName = profile?.username || (addr.slice(0,6) + '…' + addr.slice(-4));
   const avatarContent = getDisplayAvatar(addr);
 
@@ -2931,19 +3106,38 @@ document.addEventListener('keydown', (e) => {
 });
 
 // ══════════════════════════════════════════════
-//  👤 CREATOR PROFILE SETUP
+//  👤 CREATOR PROFILE SETUP — ONCHAIN
 // ══════════════════════════════════════════════
 
 let _selectedProfilePic = '';  // final image URL chosen
 let _picMode = 'nft';          // 'nft' or 'url'
 
-function getProfileKey(addr) { return `arcnft_profile_${addr}`; }
+// In-memory profile cache for this session (address -> profile object)
+const _profileCache = {};
 
-function getCreatorProfile(addr) {
-  try { return JSON.parse(localStorage.getItem(getProfileKey(addr)) || 'null'); } catch { return null; }
+// ── Fetch profile from chain (with cache) ──
+async function fetchOnchainProfile(addr) {
+  if (_profileCache[addr] !== undefined) return _profileCache[addr];
+  if (!profileContract) {
+    // Fallback to localStorage if no profile contract set
+    try { const p = JSON.parse(localStorage.getItem(`arcnft_profile_${addr}`) || 'null'); _profileCache[addr] = p; return p; } catch { return null; }
+  }
+  try {
+    const [username, bio, twitter, pic, updatedAt] = await profileContract.getProfile(addr);
+    if (!username) { _profileCache[addr] = null; return null; }
+    const profile = { username, bio, twitter, pic, updatedAt: Number(updatedAt) * 1000, address: addr };
+    _profileCache[addr] = profile;
+    return profile;
+  } catch { _profileCache[addr] = null; return null; }
 }
 
-function saveCreatorProfile() {
+// ── Get profile synchronously from cache only ──
+function getCreatorProfile(addr) {
+  return _profileCache[addr] || null;
+}
+
+// ── Save profile onchain ──
+async function saveCreatorProfile() {
   if (!walletAddress) { toast('Connect wallet first', 'error'); return; }
 
   const username = document.getElementById('profileUsernameInput').value.trim();
@@ -2953,16 +3147,54 @@ function saveCreatorProfile() {
 
   if (!username) { toast('Please enter a username', 'error'); return; }
   if (username.includes(' ')) { toast('Username cannot contain spaces', 'error'); return; }
+  if (username.length > 30)   { toast('Username max 30 characters', 'error'); return; }
+  if (bio.length > 200)       { toast('Bio max 200 characters', 'error'); return; }
 
-  const profile = { username, bio, twitter, pic, address: walletAddress, updatedAt: Date.now() };
-  localStorage.setItem(getProfileKey(walletAddress), JSON.stringify(profile));
-  toast('✅ Profile saved successfully!', 'success');
+  // If no profile contract, fall back to localStorage with a warning
+  if (!profileContract) {
+    const profile = { username, bio, twitter, pic, address: walletAddress, updatedAt: Date.now() };
+    localStorage.setItem(`arcnft_profile_${walletAddress}`, JSON.stringify(profile));
+    _profileCache[walletAddress] = profile;
+    toast('⚠️ Profile saved locally (no Profile Contract set). Set it in Admin tab for onchain storage.', 'success');
+    updateProfilePreview(profile);
+    return;
+  }
 
-  // Update preview
-  updateProfilePreview(profile);
+  const btn = document.querySelector('#tab-myprofile .btn-arc.btn-full');
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span> Saving onchain…'; }
+
+  try {
+    // Check username availability (skip if same user already has it)
+    const isTaken = await profileContract.isUsernameTaken(username);
+    if (isTaken) {
+      // It might be taken by current user — fetch their profile
+      const existing = await fetchOnchainProfile(walletAddress);
+      if (existing?.username !== username) {
+        toast('Username already taken. Choose another.', 'error');
+        if (btn) { btn.disabled = false; btn.textContent = '💾 Save Profile'; }
+        return;
+      }
+    }
+
+    const tx = await profileContract.setProfile(username, bio, twitter, pic);
+    toast(`Saving profile… <a href="${ARC_EXPLORER}/tx/${tx.hash}" target="_blank">View tx ↗</a>`);
+    await tx.wait();
+
+    // Update cache
+    const profile = { username, bio, twitter, pic, address: walletAddress, updatedAt: Date.now() };
+    _profileCache[walletAddress] = profile;
+
+    toast('✅ Profile saved onchain!', 'success');
+    updateProfilePreview(profile);
+  } catch(e) {
+    toast('Save failed: ' + (e.reason || e.message), 'error');
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = '💾 Save Profile'; }
 }
 
-function loadMyProfile() {
+// ── Load my profile from chain into form ──
+async function loadMyProfile() {
   if (!walletAddress) {
     document.getElementById('profileNotConnected').style.display = 'block';
     document.getElementById('profileSetupArea').style.display   = 'none';
@@ -2972,8 +3204,18 @@ function loadMyProfile() {
   document.getElementById('profileSetupArea').style.display   = 'block';
   document.getElementById('profileAddrPreview').textContent   = walletAddress.slice(0,6) + '…' + walletAddress.slice(-4);
 
-  // Load saved profile
-  const saved = getCreatorProfile(walletAddress);
+  // Show onchain status
+  const statusEl = document.getElementById('profileOnchainStatus');
+  if (statusEl) {
+    if (profileContract) {
+      statusEl.innerHTML = `<span style="color:var(--arc)">🔗 Onchain storage active · <a href="${ARC_EXPLORER}/address/${PROFILE_CONTRACT_ADDRESS}" target="_blank" class="explorer-link">View contract ↗</a></span>`;
+    } else {
+      statusEl.innerHTML = `<span style="color:var(--danger)">⚠️ No Profile Contract set — data saves locally. Set it in <button onclick="switchTab('admin')" style="background:none;border:none;color:var(--usdc);cursor:pointer;font-size:inherit;font-weight:600;">Admin tab</button></span>`;
+    }
+  }
+
+  // Load saved profile from chain
+  const saved = await fetchOnchainProfile(walletAddress);
   if (saved) {
     document.getElementById('profileUsernameInput').value = saved.username || '';
     document.getElementById('profileBioInput').value      = saved.bio      || '';
@@ -3086,6 +3328,13 @@ function getDisplayAvatar(addr) {
   return emoji;
 }
 
+// ── Pre-fetch profiles for a list of addresses (batch) ──
+async function prefetchProfiles(addresses) {
+  const unique = [...new Set(addresses)].filter(a => _profileCache[a] === undefined);
+  if (unique.length === 0) return;
+  await Promise.all(unique.map(addr => fetchOnchainProfile(addr)));
+}
+
 
 // Load banner on page start
 window.addEventListener('load', () => {
@@ -3098,6 +3347,12 @@ window.addEventListener('load', () => {
     b.style.display = 'block';
   }
   checkAdminRestrictions();
+
+  // Show profile contract status in admin if already set
+  if (PROFILE_CONTRACT_ADDRESS) {
+    const statusEl = document.getElementById('profileContractStatus');
+    if (statusEl) statusEl.innerHTML = `<span style="color:var(--arc)">✅ Active · <a href="${ARC_EXPLORER}/address/${PROFILE_CONTRACT_ADDRESS}" target="_blank" class="explorer-link">View on ArcScan ↗</a></span>`;
+  }
 });
 
 </script>
